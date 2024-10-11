@@ -12,6 +12,7 @@ builder.Services.AddDbContext<GmaxDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
@@ -31,5 +32,9 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Articoloes}/{action=Index}/{id?}");
 
 app.Run();

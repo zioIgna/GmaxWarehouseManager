@@ -6,7 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<GmaxDbContext>(options =>
     //options.UseOracle(@"User Id=gmax_user;Password=gMaxDevelopment2024;Data Source=pdborcl;")
-    options.UseOracle(@"SERVER=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=FREEPDB1)));uid=gmax_user ;pwd=gMaxDevelopment2024;")
+    options.UseOracle(@"User Id=gmax_user;Password=gMaxDevelopment2024;Data Source=localhost:1521/FREEPDB1;")
+    //options.UseOracle(@"SERVER=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=FREEPDB1)));uid=gmax_user ;pwd=gMaxDevelopment2024;")
     );
 
 // Add services to the container.

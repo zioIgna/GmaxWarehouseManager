@@ -10,31 +10,31 @@ using Gmax.Models.Entities;
 
 namespace Gmax.Controllers
 {
-    public class ArticoloesController : Controller
+    public class ArticoloController : Controller
     {
         private readonly GmaxDbContext _context;
 
-        public ArticoloesController(GmaxDbContext context)
+        public ArticoloController(GmaxDbContext context)
         {
             _context = context;
         }
 
-        // GET: Articoloes
+        // GET: Articolo
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Articoli.ToListAsync());
+            return View(await _context.Articolo.ToListAsync());
         }
 
-        // GET: Articoloes/Details/5
-        public async Task<IActionResult> Details(string id)
+        // GET: Articolo/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var articolo = await _context.Articoli
-                .FirstOrDefaultAsync(m => m.CodiceArticolo == id);
+            var articolo = await _context.Articolo
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (articolo == null)
             {
                 return NotFound();
@@ -43,18 +43,18 @@ namespace Gmax.Controllers
             return View(articolo);
         }
 
-        // GET: Articoloes/Create
+        // GET: Articolo/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Articoloes/Create
+        // POST: Articolo/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CodiceArticolo,TipoArticolo,Descrizione,UnitaMisura,QtaScortaMin,QtaImpCliente")] Articolo articolo)
+        public async Task<IActionResult> Create([Bind("Id,TipoArticolo,CodiceArticolo,Descrizione,UnitaMisuraGestione,QtaScortaMin,CodUbicazione,CodCostruttore,QtaImpCliente,DataInserimento")] Articolo articolo)
         {
             if (ModelState.IsValid)
             {
@@ -65,15 +65,15 @@ namespace Gmax.Controllers
             return View(articolo);
         }
 
-        // GET: Articoloes/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        // GET: Articolo/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var articolo = await _context.Articoli.FindAsync(id);
+            var articolo = await _context.Articolo.FindAsync(id);
             if (articolo == null)
             {
                 return NotFound();
@@ -81,14 +81,14 @@ namespace Gmax.Controllers
             return View(articolo);
         }
 
-        // POST: Articoloes/Edit/5
+        // POST: Articolo/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("CodiceArticolo,TipoArticolo,Descrizione,UnitaMisura,QtaScortaMin,QtaImpCliente")] Articolo articolo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,TipoArticolo,CodiceArticolo,Descrizione,UnitaMisuraGestione,QtaScortaMin,CodUbicazione,CodCostruttore,QtaImpCliente,DataInserimento")] Articolo articolo)
         {
-            if (id != articolo.CodiceArticolo)
+            if (id != articolo.Id)
             {
                 return NotFound();
             }
@@ -102,7 +102,7 @@ namespace Gmax.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ArticoloExists(articolo.CodiceArticolo))
+                    if (!ArticoloExists(articolo.Id))
                     {
                         return NotFound();
                     }
@@ -116,16 +116,16 @@ namespace Gmax.Controllers
             return View(articolo);
         }
 
-        // GET: Articoloes/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        // GET: Articolo/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var articolo = await _context.Articoli
-                .FirstOrDefaultAsync(m => m.CodiceArticolo == id);
+            var articolo = await _context.Articolo
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (articolo == null)
             {
                 return NotFound();
@@ -134,24 +134,24 @@ namespace Gmax.Controllers
             return View(articolo);
         }
 
-        // POST: Articoloes/Delete/5
+        // POST: Articolo/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var articolo = await _context.Articoli.FindAsync(id);
+            var articolo = await _context.Articolo.FindAsync(id);
             if (articolo != null)
             {
-                _context.Articoli.Remove(articolo);
+                _context.Articolo.Remove(articolo);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ArticoloExists(string id)
+        private bool ArticoloExists(int id)
         {
-            return _context.Articoli.Any(e => e.CodiceArticolo == id);
+            return _context.Articolo.Any(e => e.Id == id);
         }
     }
 }

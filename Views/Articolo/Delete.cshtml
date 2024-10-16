@@ -12,6 +12,18 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TipoArticolo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TipoArticolo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodiceArticolo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodiceArticolo)
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Descrizione)
         </dt>
         <dd class = "col-sm-10">
@@ -30,16 +42,33 @@
             @Html.DisplayFor(model => model.QtaScortaMin)
         </dd>
         <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodUbicazione)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodUbicazione)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodCostruttore)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodCostruttore)
+        </dd>
+        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.QtaImpCliente)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.QtaImpCliente)
         </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataInserimento)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataInserimento)
+        </dd>
     </dl>
     
     <form asp-action="Delete">
-        <input type="hidden" asp-for="CodiceArticolo" />
-        <input type="hidden" asp-for="TipoArticolo" />
+        <input type="hidden" asp-for="Id" />
         <input type="submit" value="Delete" class="btn btn-danger" /> |
         <a asp-action="Index">Back to List</a>
     </form>

@@ -1,0 +1,72 @@
+﻿@model Gmax.Models.Entities.Articolo
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Articolo</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TipoArticolo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TipoArticolo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodiceArticolo)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodiceArticolo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Descrizione)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Descrizione)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UnitaMisuraGestione)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UnitaMisuraGestione)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QtaScortaMin)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QtaScortaMin)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodUbicazione)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodUbicazione)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CodCostruttore)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CodCostruttore)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.QtaImpCliente)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.QtaImpCliente)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataInserimento)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataInserimento)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

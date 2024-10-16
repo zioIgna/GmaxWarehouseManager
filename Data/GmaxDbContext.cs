@@ -12,9 +12,9 @@ namespace Gmax.Data
             
         }
 
-        public DbSet<Articolo> Articoli { get; set; }
-        public DbSet<OrdineProduzione> OrdiniProduzione { get; set; }
-        public DbSet<OrdineProdComp> OrdiniProdComp { get; set; }
+        public DbSet<Articolo> Articolo { get; set; }
+        public DbSet<OrdineProduzione> OrdineProduzione { get; set; }
+        public DbSet<OrdineProdComp> OrdineProdComp { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

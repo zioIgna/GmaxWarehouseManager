@@ -3,6 +3,7 @@ using System;
 using Gmax.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Oracle.EntityFrameworkCore.Metadata;
 
@@ -11,9 +12,11 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace Gmax.Migrations
 {
     [DbContext(typeof(GmaxDbContext))]
-    partial class GmaxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241016142807_Articolo-OrdineProd-OrdineProdComp")]
+    partial class ArticoloOrdineProdOrdineProdComp
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

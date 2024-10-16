@@ -34,6 +34,8 @@ namespace Gmax.Models.Entities
 
         public int? QtaImpCliente { get; set; }
         public DateTime? DataInserimento { get; set; }
+        public List<OrdineProduzione> OrdineProduzioneLancioList { get; set; } = new List<OrdineProduzione>();
+        public List<OrdineProduzione> OrdineProduzioneComponenteList { get; set; } = new List<OrdineProduzione>();
 
     }
 }

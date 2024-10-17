@@ -1,0 +1,67 @@
+﻿@model Gmax.Models.Entities.OrdineProduzione
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>OrdineProduzione</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NroLancio)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NroLancio)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.NroSottolancio)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.NroSottolancio)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Stato)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Stato)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ArtLancio)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.ArtLancio.CodiceArticolo)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataCreazione)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataCreazione)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DataPrevCons)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DataPrevCons)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.ArtComponenteList)
+        </dt>
+        <dd class = "col-sm-10">
+            <ul>
+                @foreach(var art in Model.ArtComponenteList)
+                {
+                    <li>
+                        @art.Descrizione
+                    </li>
+                }
+            </ul>
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

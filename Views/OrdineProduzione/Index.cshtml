@@ -1,0 +1,65 @@
+﻿@model IEnumerable<Gmax.Models.Entities.OrdineProduzione>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.NroLancio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.NroSottolancio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stato)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ArtLancio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataCreazione)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataPrevCons)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.NroLancio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NroSottolancio)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stato)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ArtLancio.CodiceArticolo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataCreazione)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataPrevCons)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

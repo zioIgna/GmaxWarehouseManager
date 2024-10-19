@@ -1,0 +1,71 @@
+﻿@model IEnumerable<Gmax.Models.Entities.ArticoloCK>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Descrizione)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitaMisuraGestione)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtaScortaMin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CodUbicazione)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.CodCostruttore)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.QtaImpCliente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataInserimento)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descrizione)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitaMisuraGestione)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtaScortaMin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CodUbicazione)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CodCostruttore)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.QtaImpCliente)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataInserimento)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
+                @Html.ActionLink("Details", "Details", new { tipoArticolo = item.TipoArticolo, codiceArticolo = item.CodiceArticolo }) |
+                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

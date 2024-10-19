@@ -22,7 +22,7 @@ namespace Gmax.Controllers
         // GET: Articolo
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Articolo.ToListAsync());
+            return View(await _context.ArticoliIntKey.ToListAsync());
         }
 
         // GET: Articolo/Details/5
@@ -33,7 +33,7 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var articolo = await _context.Articolo
+            var articolo = await _context.ArticoliIntKey
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (articolo == null)
             {
@@ -73,7 +73,7 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var articolo = await _context.Articolo.FindAsync(id);
+            var articolo = await _context.ArticoliIntKey.FindAsync(id);
             if (articolo == null)
             {
                 return NotFound();
@@ -124,7 +124,7 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var articolo = await _context.Articolo
+            var articolo = await _context.ArticoliIntKey
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (articolo == null)
             {
@@ -139,10 +139,10 @@ namespace Gmax.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var articolo = await _context.Articolo.FindAsync(id);
+            var articolo = await _context.ArticoliIntKey.FindAsync(id);
             if (articolo != null)
             {
-                _context.Articolo.Remove(articolo);
+                _context.ArticoliIntKey.Remove(articolo);
             }
 
             await _context.SaveChangesAsync();
@@ -151,7 +151,7 @@ namespace Gmax.Controllers
 
         private bool ArticoloExists(int id)
         {
-            return _context.Articolo.Any(e => e.Id == id);
+            return _context.ArticoliIntKey.Any(e => e.Id == id);
         }
     }
 }

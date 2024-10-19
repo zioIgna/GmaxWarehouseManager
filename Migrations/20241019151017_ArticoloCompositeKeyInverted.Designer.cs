@@ -12,8 +12,8 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace Gmax.Migrations
 {
     [DbContext(typeof(GmaxDbContext))]
-    [Migration("20241019105036_CompositeKeyEntities")]
-    partial class CompositeKeyEntities
+    [Migration("20241019151017_ArticoloCompositeKeyInverted")]
+    partial class ArticoloCompositeKeyInverted
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,18 +74,18 @@ namespace Gmax.Migrations
                     b.HasIndex("TipoArticolo", "CodiceArticolo")
                         .IsUnique();
 
-                    b.ToTable("Articolo");
+                    b.ToTable("ArticoliIntKey");
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.ArticoloCK", b =>
                 {
-                    b.Property<string>("CodiceArticolo")
-                        .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR2(30)");
-
                     b.Property<string>("TipoArticolo")
                         .HasMaxLength(3)
                         .HasColumnType("NVARCHAR2(3)");
+
+                    b.Property<string>("CodiceArticolo")
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<string>("CodCostruttore")
                         .HasMaxLength(256)
@@ -113,7 +113,7 @@ namespace Gmax.Migrations
                         .HasMaxLength(3)
                         .HasColumnType("NVARCHAR2(3)");
 
-                    b.HasKey("CodiceArticolo", "TipoArticolo");
+                    b.HasKey("TipoArticolo", "CodiceArticolo");
 
                     b.ToTable("ArticoliCK");
                 });
@@ -144,24 +144,24 @@ namespace Gmax.Migrations
 
                     b.HasIndex("OrdineProduzioneId");
 
-                    b.ToTable("OrdineProdComp");
+                    b.ToTable("OrdiniProdCompIntKey");
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProdCompCK", b =>
                 {
-                    b.Property<string>("CodiceArticolo")
-                        .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR2(30)");
-
-                    b.Property<string>("TipoArticolo")
-                        .HasMaxLength(3)
-                        .HasColumnType("NVARCHAR2(3)");
-
                     b.Property<int>("NroLancio")
                         .HasColumnType("NUMBER(10)");
 
                     b.Property<int>("NroSottolancio")
                         .HasColumnType("NUMBER(10)");
+
+                    b.Property<string>("TipoArticolo")
+                        .HasMaxLength(3)
+                        .HasColumnType("NVARCHAR2(3)");
+
+                    b.Property<string>("CodiceArticolo")
+                        .HasMaxLength(30)
+                        .HasColumnType("NVARCHAR2(30)");
 
                     b.Property<decimal>("QtaGiaScaricata")
                         .HasPrecision(14, 4)
@@ -177,9 +177,9 @@ namespace Gmax.Migrations
                     b.Property<int>("SeqOp")
                         .HasColumnType("NUMBER(10)");
 
-                    b.HasKey("CodiceArticolo", "TipoArticolo", "NroLancio", "NroSottolancio");
+                    b.HasKey("NroLancio", "NroSottolancio", "TipoArticolo", "CodiceArticolo");
 
-                    b.HasIndex("NroLancio", "NroSottolancio");
+                    b.HasIndex("TipoArticolo", "CodiceArticolo");
 
                     b.ToTable("OrdiniProdCompCK");
                 });
@@ -219,7 +219,7 @@ namespace Gmax.Migrations
                     b.HasIndex("NroLancio", "NroSottolancio")
                         .IsUnique();
 
-                    b.ToTable("OrdineProduzione");
+                    b.ToTable("OrdiniProduzioneIntKey");
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProduzioneCK", b =>
@@ -279,15 +279,15 @@ namespace Gmax.Migrations
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProdCompCK", b =>
                 {
-                    b.HasOne("Gmax.Models.Entities.ArticoloCK", null)
-                        .WithMany()
-                        .HasForeignKey("CodiceArticolo", "TipoArticolo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Gmax.Models.Entities.OrdineProduzioneCK", null)
                         .WithMany()
                         .HasForeignKey("NroLancio", "NroSottolancio")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Gmax.Models.Entities.ArticoloCK", null)
+                        .WithMany()
+                        .HasForeignKey("TipoArticolo", "CodiceArticolo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

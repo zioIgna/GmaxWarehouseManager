@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Gmax.Models.Entities
 {
-    [PrimaryKey(nameof(CodiceArticolo), nameof(TipoArticolo))]
+    [PrimaryKey(nameof(TipoArticolo),nameof(CodiceArticolo))]
     public class ArticoloCK
     {
         [MaxLength(3)]

@@ -22,7 +22,7 @@ namespace Gmax.Controllers
         // GET: OrdineProduzione
         public async Task<IActionResult> Index()
         {
-            var gmaxDbContext = _context.OrdineProduzione.Include(o => o.ArtLancio);
+            var gmaxDbContext = _context.OrdiniProduzioneIntKey.Include(o => o.ArtLancio);
             return View(await gmaxDbContext.ToListAsync());
         }
 
@@ -34,7 +34,7 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var ordineProduzione = await _context.OrdineProduzione
+            var ordineProduzione = await _context.OrdiniProduzioneIntKey
                 .Include(o => o.ArtLancio)
                 .Include(o => o.ArtComponenteList)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -49,7 +49,7 @@ namespace Gmax.Controllers
         // GET: OrdineProduzione/Create
         public IActionResult Create()
         {
-            ViewData["ArtLancioId"] = new SelectList(_context.Articolo, "Id", "CodiceArticolo");
+            ViewData["ArtLancioId"] = new SelectList(_context.ArticoliIntKey, "Id", "CodiceArticolo");
             return View();
         }
 
@@ -67,7 +67,7 @@ namespace Gmax.Controllers
                 return RedirectToAction(nameof(Index));
             }
             var errors = ModelState.Select(x => x.Value.Errors).Where(y => y.Count > 0).ToList();
-            ViewData["ArtLancioId"] = new SelectList(_context.Articolo, "Id", "CodiceArticolo", ordineProduzione.ArtLancioId);
+            ViewData["ArtLancioId"] = new SelectList(_context.ArticoliIntKey, "Id", "CodiceArticolo", ordineProduzione.ArtLancioId);
             return View(ordineProduzione);
         }
 
@@ -79,12 +79,12 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var ordineProduzione = await _context.OrdineProduzione.FindAsync(id);
+            var ordineProduzione = await _context.OrdiniProduzioneIntKey.FindAsync(id);
             if (ordineProduzione == null)
             {
                 return NotFound();
             }
-            ViewData["ArtLancioId"] = new SelectList(_context.Articolo, "Id", "CodiceArticolo", ordineProduzione.ArtLancioId);
+            ViewData["ArtLancioId"] = new SelectList(_context.ArticoliIntKey, "Id", "CodiceArticolo", ordineProduzione.ArtLancioId);
             return View(ordineProduzione);
         }
 
@@ -120,7 +120,7 @@ namespace Gmax.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ArtLancioId"] = new SelectList(_context.Articolo, "Id", "CodiceArticolo", ordineProduzione.ArtLancioId);
+            ViewData["ArtLancioId"] = new SelectList(_context.ArticoliIntKey, "Id", "CodiceArticolo", ordineProduzione.ArtLancioId);
             return View(ordineProduzione);
         }
 
@@ -132,7 +132,7 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var ordineProduzione = await _context.OrdineProduzione
+            var ordineProduzione = await _context.OrdiniProduzioneIntKey
                 .Include(o => o.ArtLancio)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (ordineProduzione == null)
@@ -148,10 +148,10 @@ namespace Gmax.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var ordineProduzione = await _context.OrdineProduzione.FindAsync(id);
+            var ordineProduzione = await _context.OrdiniProduzioneIntKey.FindAsync(id);
             if (ordineProduzione != null)
             {
-                _context.OrdineProduzione.Remove(ordineProduzione);
+                _context.OrdiniProduzioneIntKey.Remove(ordineProduzione);
             }
 
             await _context.SaveChangesAsync();
@@ -160,7 +160,7 @@ namespace Gmax.Controllers
 
         private bool OrdineProduzioneExists(int id)
         {
-            return _context.OrdineProduzione.Any(e => e.Id == id);
+            return _context.OrdiniProduzioneIntKey.Any(e => e.Id == id);
         }
     }
 }

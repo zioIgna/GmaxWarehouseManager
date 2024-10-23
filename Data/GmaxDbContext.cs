@@ -40,9 +40,12 @@ namespace Gmax.Data
                 .HasMany(art => art.OrdineProduzioneComponenteList)
                 .WithMany(ord => ord.ArtComponenteList)
                 .UsingEntity<OrdineProdCompCK>(
-                    r => r.HasOne<OrdineProduzioneCK>().WithMany().HasForeignKey(e => new { e.NroLancio, e.NroSottolancio }),//.HasPrincipalKey(e => new {e.NroLancio, e.NroSottolancio})
-                    l => l.HasOne<ArticoloCK>().WithMany().HasForeignKey(e => new { e.TipoArticolo, e.CodiceArticolo })//.HasPrincipalKey(e => new {e.TipoArticolo, e.CodiceArticolo}),
+                    r => r.HasOne<OrdineProduzioneCK>(opc => opc.OrdineProduzione).WithMany(op => op.OrdineProdCompCKList).HasForeignKey(e => new { e.NroLancio, e.NroSottolancio }),//.HasPrincipalKey(e => new {e.NroLancio, e.NroSottolancio})
+                    l => l.HasOne<ArticoloCK>(opc => opc.Articolo).WithMany(a => a.OrdineProdCompCKList).HasForeignKey(e => new { e.TipoArticolo, e.CodiceArticolo })//.HasPrincipalKey(e => new {e.TipoArticolo, e.CodiceArticolo}),
                 );
+            //modelBuilder.Entity<OrdineProduzioneCK>()
+            //    .HasMany(op => op.OrdineProdCompCKList)
+            //    .WithOne(opc => opc.OrdineProduzione).HasForeignKey(opc => new { opc.NroLancio, opc.NroSottolancio });
         }
     }
 }

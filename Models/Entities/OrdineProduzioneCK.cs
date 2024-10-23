@@ -28,5 +28,6 @@ namespace Gmax.Models.Entities
 
         //public List<Articolo> ArtLancioList { get; set; } = new List<Articolo>();
         public List<ArticoloCK> ArtComponenteList { get; set; } = [];
+        public List<OrdineProdCompCK> OrdineProdCompCKList { get; } = [];
     }
 }

@@ -71,7 +71,7 @@ namespace Gmax.Migrations
                     b.HasIndex("TipoArticolo", "CodiceArticolo")
                         .IsUnique();
 
-                    b.ToTable("ArticoliIntKey");
+                    b.ToTable("ArticoliIntKey", (string)null);
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.ArticoloCK", b =>
@@ -112,7 +112,7 @@ namespace Gmax.Migrations
 
                     b.HasKey("TipoArticolo", "CodiceArticolo");
 
-                    b.ToTable("ArticoliCK");
+                    b.ToTable("ArticoliCK", (string)null);
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProdComp", b =>
@@ -141,7 +141,7 @@ namespace Gmax.Migrations
 
                     b.HasIndex("OrdineProduzioneId");
 
-                    b.ToTable("OrdiniProdCompIntKey");
+                    b.ToTable("OrdiniProdCompIntKey", (string)null);
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProdCompCK", b =>
@@ -178,7 +178,7 @@ namespace Gmax.Migrations
 
                     b.HasIndex("TipoArticolo", "CodiceArticolo");
 
-                    b.ToTable("OrdiniProdCompCK");
+                    b.ToTable("OrdiniProdCompCK", (string)null);
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProduzione", b =>
@@ -216,7 +216,7 @@ namespace Gmax.Migrations
                     b.HasIndex("NroLancio", "NroSottolancio")
                         .IsUnique();
 
-                    b.ToTable("OrdiniProduzioneIntKey");
+                    b.ToTable("OrdiniProduzioneIntKey", (string)null);
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProduzioneCK", b =>
@@ -252,7 +252,7 @@ namespace Gmax.Migrations
 
                     b.HasIndex("TipoArtLancio", "CodArtLancio");
 
-                    b.ToTable("OrdiniProduzioneCK");
+                    b.ToTable("OrdiniProduzioneCK", (string)null);
                 });
 
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProdComp", b =>

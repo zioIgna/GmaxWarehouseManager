@@ -10,7 +10,7 @@ namespace Gmax.Models.Entities
         [Range(0, 999)]
         public int NroSottolancio { get; set; }
         //public int OrdineProduzioneId { get; set; }
-        //public OrdineProduzioneCK OrdineProduzione { get; set; } = null!;
+        public OrdineProduzioneCK OrdineProduzione { get; set; } = null!;
 
         [Range(0, 999)]
         public int SeqOp { get; set; }
@@ -26,10 +26,12 @@ namespace Gmax.Models.Entities
         [Required]
         public string CodiceArticolo { get; set; }
         //public int ArticoloId { get; set; }
-        //public ArticoloCK Articolo { get; set; } = null!;
+        public ArticoloCK Articolo { get; set; } = null!;
         [Precision(14, 4)]
         public decimal QtaPrevista { get; set; }
         [Precision(14, 4)]
         public decimal QtaGiaScaricata { get; set; }
+
+        //public List<AssegnazioneMagazzino> Assegnazioni { get; set; }
     }
 }

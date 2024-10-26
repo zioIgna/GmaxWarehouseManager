@@ -1,55 +1,124 @@
-﻿@model Gmax.Models.Entities.OrdineProduzioneCK
+﻿@model Gmax.Models.ViewModels.OrdineCK.OrdineProduzioneCKDetailViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h2>Dettagli Ordine Produzione</h2>
 
-<div>
-    <h4>OrdineProduzioneCK</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Stato)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Stato)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ArtLancio)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ArtLancio.TipoArticolo)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataCreazione)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataCreazione)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DataPrevCons)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DataPrevCons)
-        </dd>
-        <dt class = "col-sm-2">
-            Articoli
-        </dt>
-        <dd class = "col-sm-10">
-            <ul>
-            @foreach (var art in Model.ArtComponenteList)
+<div class="card bg-light mb-2">
+    <div class="card-header fw-bold">Info</div>
+    <div class="card-body">
+        <div class="row d-flex row-cols-md-5 mb-1">
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="NroLancio" class="control-label">Num Lancio</label>
+                    <input id="NroLancio" value="@Model.NroLancio" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="NroSottolancio" class="control-label">Num Sottolancio</label>
+                    <input id="NroSottolancio" value="@Model.NroSottolancio" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="DataCreazione" class="control-label">Data Creazione</label>
+                    <input id="DataCreazione" value="@Model.DataCreazione" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="DataPrevCons" class="control-label">Data Prevista Consegna</label>
+                    <input id="DataPrevCons" value="@Model.DataPrevCons" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+            
+            <div class="col">
+                <div class="form-group">
+                    <label asp-for="Stato" class="control-label">Stato</label>
+                    <input id="Stato" value="@Model.Stato" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+        </div>
+        <div class="row d-flex row-cols-md-3 mb-1">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="TipoArtLancio" class="control-label">Tipo Art Lancio</label>
+                    <input id="TipoArtLancio" value="@Model.TipoArtLancio" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label asp-for="CodArtLancio" class="control-label">Cod Art Lancio</label>
+                    <input id="CodArtLancio" value="@Model.CodArtLancio" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label asp-for="ArtLancio" class="control-label">Articolo Lancio</label>
+                    <input id="ArtLancio" value="@Model.ArtLancio.Descrizione" class="form-control" style="background-color:white" disabled readonly />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3>Magazzini articoli</h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tipo Articolo</th>
+            <th>Codice Articolo</th>
+            <th>Descrizione</th>
+            <th>Un mis</th>
+            @* <th>Qta scorta min</th>
+            <th>Cod ubicazione</th>
+            <th>Cod costruttore</th>
+            <th>Qta imp cliente</th>
+            <th>Data inserimento</th> *@
+            <th>Quantità</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach(var opc in Model.OrdineProdCompCKList)
+        {
+            var descr = string.Empty;
+            if (opc.Articolo != null && !string.IsNullOrWhiteSpace(opc.Articolo?.Descrizione))
             {
-                <li>
-                   @art.Descrizione
-                </li>
+                descr = opc.Articolo.Descrizione;
+                if(descr.Length > 15)
+                {
+                    descr = descr.Substring(0, 15);
+                }
             }
-            </ul>
-        </dd>
-    </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { /* id = Model.PrimaryKey */ }) |
-    <a asp-action="Index">Back to List</a>
-</div>
+            <tr>
+                <td>@opc.TipoArticolo</td>
+                <td>@opc.CodiceArticolo</td>
+                <td>@descr</td>
+                <td>@opc.Articolo?.UnitaMisuraGestione</td>
+                <td>@opc.Assegnazioni?.FirstOrDefault()?.Quantita</td>
+                <td><i class="bi bi-check-circle"></i></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@* <div class="card bg-light mb-2">
+    <div class="card-header fw-bold">
+        Allegati
+    </div>
+    <div class="card-body">
+        <div class="row row-cols-auto">
+            @if (allegati != null && allegati.Length > 0)
+            {
+                foreach (var all in allegati)
+                {
+                    <div class="col"><i class="bi bi-file-earmark-excel me-2"></i>@all</div>
+                }
+            }
+        </div>
+    </div>
+</div> *@

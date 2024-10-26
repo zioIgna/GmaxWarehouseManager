@@ -42,16 +42,20 @@ namespace Gmax.Controllers
                 return NotFound();
             }
 
-            var ordineProduzioneCK = await _context.OrdiniProduzioneCK
-                .Include(o => o.ArtLancio)
-                .Include(o => o.ArtComponenteList)
-                .FirstOrDefaultAsync(m => m.NroLancio == nroLancio && m.NroSottolancio == nroSottolancio);
-            if (ordineProduzioneCK == null)
-            {
-                return NotFound();
-            }
+            var ordineProduzioneCKDetailViewModel = await ordineProduzioneCKService.GetOrdineProduzioneCKDetailViewModelAsync(nroLancio, nroSottolancio);
 
-            return View(ordineProduzioneCK);
+            return View(ordineProduzioneCKDetailViewModel);
+
+            //var ordineProduzioneCK = await _context.OrdiniProduzioneCK
+            //    .Include(o => o.ArtLancio)
+            //    .Include(o => o.ArtComponenteList)
+            //    .FirstOrDefaultAsync(m => m.NroLancio == nroLancio && m.NroSottolancio == nroSottolancio);
+            //if (ordineProduzioneCK == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return View(ordineProduzioneCK);
         }
 
         // GET: OrdineProduzioneCKs/Create

@@ -7,31 +7,37 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gmax.Data;
 using Gmax.Models.Entities;
+using Gmax.Models.Services.OrdineCK;
 
 namespace Gmax.Controllers
 {
     public class OrdineProduzioneCKsController : Controller
     {
         private readonly GmaxDbContext _context;
+        private readonly IOrdineProduzioneCKService ordineProduzioneCKService;
 
-        public OrdineProduzioneCKsController(GmaxDbContext context)
+        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService)
         {
             _context = context;
+            this.ordineProduzioneCKService = ordineProduzioneCKService;
         }
 
         // GET: OrdineProduzioneCKs
         public async Task<IActionResult> Index()
         {
-            var gmaxDbContext = _context.OrdiniProduzioneCK
-                .Include(o => o.ArtLancio)
-                .Include(o => o.ArtComponenteList);
-            return View(await gmaxDbContext.ToListAsync());
+            var ordiniCKListViewModel = await ordineProduzioneCKService.GetOrdineProdCKListViewModelAsync();
+
+            return View(ordiniCKListViewModel);
+            //var gmaxDbContext = _context.OrdiniProduzioneCK
+            //    .Include(o => o.ArtLancio)
+            //    .Include(o => o.ArtComponenteList);
+            //return View(await gmaxDbContext.ToListAsync());
         }
 
         // GET: OrdineProduzioneCKs/Details/5
-        public async Task<IActionResult> Details(int numeroLancio, int numeroSottolancio)
+        public async Task<IActionResult> Details(int nroLancio, int nroSottolancio)
         {
-            if (numeroLancio == 0 || numeroSottolancio == 0)
+            if (nroLancio == 0 || nroSottolancio == 0)
             {
                 return NotFound();
             }
@@ -39,7 +45,7 @@ namespace Gmax.Controllers
             var ordineProduzioneCK = await _context.OrdiniProduzioneCK
                 .Include(o => o.ArtLancio)
                 .Include(o => o.ArtComponenteList)
-                .FirstOrDefaultAsync(m => m.NroLancio == numeroLancio && m.NroSottolancio == numeroSottolancio);
+                .FirstOrDefaultAsync(m => m.NroLancio == nroLancio && m.NroSottolancio == nroSottolancio);
             if (ordineProduzioneCK == null)
             {
                 return NotFound();

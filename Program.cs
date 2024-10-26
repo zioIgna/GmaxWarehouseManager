@@ -1,4 +1,5 @@
 using Gmax.Data;
+using Gmax.Models.Services.OrdineCK;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -13,6 +14,8 @@ builder.Services.AddDbContext<GmaxDbContext>(options =>
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddTransient<IOrdineProduzioneCKService,  OrdineProduzioneCKService>();
 
 var app = builder.Build();
 

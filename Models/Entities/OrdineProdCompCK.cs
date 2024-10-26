@@ -10,7 +10,7 @@ namespace Gmax.Models.Entities
         [Range(0, 999)]
         public int NroSottolancio { get; set; }
         //public int OrdineProduzioneId { get; set; }
-        public OrdineProduzioneCK OrdineProduzione { get; set; } = null!;
+        public OrdineProduzioneCK OrdineProduzioneCK { get; set; } = null!;
 
         [Range(0, 999)]
         public int SeqOp { get; set; }

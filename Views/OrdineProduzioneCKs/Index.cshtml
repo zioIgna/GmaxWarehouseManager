@@ -1,53 +1,47 @@
-﻿@model IEnumerable<Gmax.Models.Entities.OrdineProduzioneCK>
+﻿@using Gmax.Models.ViewModels.OrdineCK
+@model OrdineProduzioneCKListViewModel
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Ordini</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Stato)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ArtLancio)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataCreazione)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DataPrevCons)
-            </th>
+            <th>Num Lancio</th>
+            <th>Num Sottolancio</th>
+            <th>Stato</th>
+            <th>Art Lancio</th>
+            <th>Data Creazione</th>
+            <th>Data Prev Consegna</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Stato)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ArtLancio.TipoArticolo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataCreazione)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataPrevCons)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                    @Html.ActionLink("Details", "Details", new { numeroLancio = item.NroLancio, numeroSottolancio = item.NroSottolancio }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @foreach(var row in Model.Rows)
+        {
+            string descr = string.Empty;
+            if(row.ArtLancio != null && !string.IsNullOrWhiteSpace(row.ArtLancio.Descrizione))
+            {
+                descr = row.ArtLancio.Descrizione;
+                if (row.ArtLancio.Descrizione.Length > 15)
+                {
+                    descr = row.ArtLancio.Descrizione.Substring(0, 15);
+                }
+            }
+            <tr>
+                <td>@row.NroLancio</td>
+                <td>@row.NroSottolancio</td>
+                <td>@row.Stato</td>
+                <td>@descr</td>
+                <td>@row.DataCreazione</td>
+                <td>@row.DataPrevCons</td>
+                <td>
+                    <a asp-action="Details" asp-route-nroLancio="@row.NroLancio" asp-route-nroSottolancio="@row.NroSottolancio"><i class="bi bi-file-text"></i></a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

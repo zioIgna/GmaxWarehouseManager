@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Services.OrdineCK;
+using Gmax.Models.Extensions;
+using Gmax.Models.ExtensionMethods;
 
 namespace Gmax.Controllers
 {
@@ -57,6 +59,48 @@ namespace Gmax.Controllers
 
             //return View(ordineProduzioneCK);
         }
+
+        public async Task<IActionResult> InlineInput(string tipoarticolo, string codarticolo, int nrolancio, int nrosottolancio)
+        {
+            OrdineProduzioneCK? ordineProduzioneCK = await ordineProduzioneCKService.GetOrdineProduzioneCKByKeyAsync(nrolancio, nrosottolancio);
+            if (ordineProduzioneCK == null)
+            {
+                throw new Exception("Ordine di produzione non trovato");
+            }
+            OrdineProdCompCK? ordineProdCompCK = ordineProduzioneCK.OrdineProdCompCKList?.FirstOrDefault(opc => opc.TipoArticolo == tipoarticolo && opc.CodiceArticolo == codarticolo);
+            if (ordineProdCompCK == null)
+            {
+                throw new Exception($"Ordine di produzione componente non trovato, TipoArticolo: {tipoarticolo}, CodiceArticolo: {codarticolo}, NumLancio: {nrolancio}, NumSottolancio: {nrosottolancio}");
+            }
+
+            return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", ordineProdCompCK.AsInlineInputViewModel());
+        }
+
+        public async Task<IActionResult> InlineOutput(string tipoarticolo, string codicearticolo, int nrolancio, int nrosottolancio)
+        {
+            OrdineProduzioneCK? ordineProduzioneCK = await ordineProduzioneCKService.GetOrdineProduzioneCKByKeyAsync(nrolancio, nrosottolancio);
+            if (ordineProduzioneCK == null)
+            {
+                throw new Exception("Ordine di produzione non trovato");
+            }
+            OrdineProdCompCK? ordineProdCompCK = ordineProduzioneCK.OrdineProdCompCKList?.FirstOrDefault(opc => opc.TipoArticolo == tipoarticolo && opc.CodiceArticolo == codicearticolo);
+            if (ordineProdCompCK == null)
+            {
+                throw new Exception($"Ordine di produzione componente non trovato, TipoArticolo: {tipoarticolo}, CodiceArticolo: {codicearticolo}, NumLancio: {nrolancio}, NumSottolancio: {nrosottolancio}");
+            }
+
+            return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", ordineProdCompCK);
+        }
+
+        //public async Task<IActionResult> InlineInput(int nroLancio, int nroSottolancio)
+        //{
+        //    OrdineProduzioneCK? ordineProduzioneCK = await ordineProduzioneCKService.GetOrdineProduzioneCKByKeyAsync(nroLancio, nroSottolancio);
+        //    if (ordineProduzioneCK == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return PartialView("/Views/Shared/Input/_OrdineProduzioneCKInlineInput.cshtml", ordineProduzioneCK.AsRowListViewModel());
+        //}
 
         // GET: OrdineProduzioneCKs/Create
         public IActionResult Create()

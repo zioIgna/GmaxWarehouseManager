@@ -1,0 +1,32 @@
+﻿@using Gmax.Models.Entities
+@model OrdineProdCompCK
+@{
+    var descr = string.Empty;
+    if (Model.Articolo != null && !string.IsNullOrWhiteSpace(Model.Articolo?.Descrizione))
+    {
+        descr = Model.Articolo.Descrizione;
+        if (descr.Length > 15)
+        {
+            descr = descr.Substring(0, 15);
+        }
+    }
+
+    var ordineProdCompCKVcId = string.Concat("#", string.Join("_", "opc", Model.TipoArticolo, Model.CodiceArticolo, Model.NroLancio, Model.NroSottolancio));
+}
+
+<td>@Model.TipoArticolo</td>
+<td>@Model.CodiceArticolo</td>
+<td>@descr</td>
+<td>@Model.Articolo?.UnitaMisuraGestione</td>
+<td>@Model.Assegnazioni?.FirstOrDefault()?.Quantita</td>
+<td>
+    <a 
+        asp-action="InlineInput" 
+        asp-route-tipoarticolo="@Model.TipoArticolo" 
+        asp-route-codarticolo="@Model.CodiceArticolo" 
+        asp-route-nrolancio="@Model.NroLancio"
+        asp-route-nrosottolancio="@Model.NroSottolancio"
+        data-ajax="true" data-ajax-mode="replace" data-ajax-update="@ordineProdCompCKVcId">
+        <i class="bi bi-pencil-square"></i>
+    </a>
+</td>

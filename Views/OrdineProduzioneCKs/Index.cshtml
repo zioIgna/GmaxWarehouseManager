@@ -7,6 +7,12 @@
 
 <h1>Ordini</h1>
 
+@* @foreach (var item in Model.Rows)
+{
+    var formId = "form_" + string.Join("_", item.NroLancio, item.NroSottolancio);
+    <form asp-action="EditInline" id="@formId" class="inlineReceiverForm" data-nrolancio="@item.NroLancio" data-nrosottolancio="@item.NroSottolancio"></form>
+} *@
+
 <table class="table">
     <thead>
         <tr>
@@ -22,6 +28,10 @@
     <tbody>
         @foreach(var row in Model.Rows)
         {
+            @* var ordineProduzioneCKId = "op_" + row.NroLancio + "_" + row.NroSottolancio;
+            <tr id="@ordineProduzioneCKId">
+                <partial name="/Views/Shared/Output/_OrdineProduzioneCKInlineOutput.cshtml" model="@row"></partial>
+            </tr> *@
             string descr = string.Empty;
             if(row.ArtLancio != null && !string.IsNullOrWhiteSpace(row.ArtLancio.Descrizione))
             {

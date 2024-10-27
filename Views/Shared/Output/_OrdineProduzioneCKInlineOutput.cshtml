@@ -1,0 +1,26 @@
+﻿@using Gmax.Models.ViewModels.OrdineCK
+@model OrdineProduzioneCKRowListViewModel
+@{
+    string descr = string.Empty;
+    if (Model.ArtLancio != null && !string.IsNullOrWhiteSpace(Model.ArtLancio.Descrizione))
+    {
+        descr = Model.ArtLancio.Descrizione;
+        if (Model.ArtLancio.Descrizione.Length > 15)
+        {
+            descr = Model.ArtLancio.Descrizione.Substring(0, 15);
+        }
+    }
+
+    var hashedOrdineProduzioneVcId = "#op_" + Model.NroLancio + "_" + Model.NroSottolancio;
+}
+
+<td>@Model.NroLancio</td>
+<td>@Model.NroSottolancio</td>
+<td>@Model.Stato</td>
+<td>@descr</td>
+<td>@Model.DataCreazione</td>
+<td>@Model.DataPrevCons</td>
+<td>
+    <a asp-action="Details" asp-route-nroLancio="@Model.NroLancio" asp-route-nroSottolancio="@Model.NroSottolancio"><i class="bi bi-file-text"></i></a> |
+    <a asp-action="InlineInput" asp-route-nroLancio="@Model.NroLancio" asp-route-nroSottolancio="@Model.NroSottolancio" data-ajax="true" data-ajax-mode="replace" data-ajax-update="@hashedOrdineProduzioneVcId"><i class="bi bi-pencil-square"></i></a>
+</td>

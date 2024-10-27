@@ -1,0 +1,30 @@
+﻿@using Gmax.Models.ViewModels.OrdineProdCompCK
+@model OrdineProdCompCKInlinenputViewModel
+
+@{
+    var formId = string.Join("_", "form", Model.TipoArticolo, Model.CodiceArticolo, Model.NroLancio, Model.NroSottolancio);
+    var ordineProdCompCKVcId = string.Concat("#", string.Join("_", "opc", Model.TipoArticolo, Model.CodiceArticolo, Model.NroLancio, Model.NroSottolancio));
+}
+
+<input asp-for="TipoArticolo" hidden form="@formId"/>
+<input asp-for="CodiceArticolo" hidden form="@formId"/>
+<input asp-for="NroLancio" hidden form="@formId"/>
+<input asp-for="NroSottolancio" hidden form="@formId"/>
+<td>@Model.TipoArticolo</td>
+<td>@Model.CodiceArticolo</td>
+<td>@Model.Articolo?.Descrizione</td>
+<td>@Model.Articolo?.UnitaMisuraGestione</td>
+<td class="form-group">
+    <input asp-for="NuovaQuantitaAssegnazione" value="@Model.Assegnazioni.FirstOrDefault()?.Quantita"/>
+</td>
+<td>
+    <button type="submit" class="btn btn-outline-primary" form="@formId"><i class="bi bi-check-circle"></i></button>
+    <a 
+        asp-action="InlineOutput" 
+        class="btn btn-outline-secondary" 
+        asp-route-tipoarticolo="@Model.TipoArticolo"
+        asp-route-codicearticolo="@Model.CodiceArticolo"
+        asp-route-nrolancio="@Model.NroLancio"
+        asp-route-nrosottolancio="@Model.NroSottolancio"
+        data-ajax="true" data-ajax-mode="replace" data-ajax-update="@ordineProdCompCKVcId"><i class="bi bi-x-circle"></i></a>
+</td>

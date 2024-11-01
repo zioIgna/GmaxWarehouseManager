@@ -5,9 +5,9 @@ namespace Gmax.Models.ExtensionMethods
 {
     public static class OrdineProdCompCKExtensions
     {
-        public static OrdineProdCompCKInlinenputViewModel AsInlineInputViewModel(this OrdineProdCompCK ordineProdCompCK)
+        public static OrdineProdCompCKInlineInputViewModel AsInlineInputViewModel(this OrdineProdCompCK ordineProdCompCK)
         {
-            OrdineProdCompCKInlinenputViewModel inlinenputViewModel = new OrdineProdCompCKInlinenputViewModel();
+            OrdineProdCompCKInlineInputViewModel inlinenputViewModel = new OrdineProdCompCKInlineInputViewModel();
             inlinenputViewModel.NroLancio = ordineProdCompCK.NroLancio;
             inlinenputViewModel.NroSottolancio = ordineProdCompCK.NroSottolancio;
             inlinenputViewModel.SeqOp = ordineProdCompCK.SeqOp;

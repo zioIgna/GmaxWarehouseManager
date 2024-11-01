@@ -1,5 +1,6 @@
 ﻿using Gmax.Models.Entities;
 using Gmax.Models.ViewModels.OrdineCK;
+using Gmax.Models.ViewModels.OrdineProdCompCK;
 
 namespace Gmax.Models.Services.OrdineCK
 {
@@ -9,5 +10,6 @@ namespace Gmax.Models.Services.OrdineCK
         Task<ICollection<OrdineProduzioneCK>> GetOrdineProduzioneCKListAsync();
         Task<OrdineProduzioneCKListViewModel> GetOrdineProdCKListViewModelAsync();
         Task<OrdineProduzioneCKDetailViewModel> GetOrdineProduzioneCKDetailViewModelAsync(int nroLancio, int nroSottolancio);
+        Task<OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel);
     }
 }

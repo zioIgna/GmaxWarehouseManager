@@ -1,5 +1,5 @@
 ﻿@using Gmax.Models.ViewModels.OrdineProdCompCK
-@model OrdineProdCompCKInlinenputViewModel
+@model OrdineProdCompCKInlineInputViewModel
 
 @{
     var formId = string.Join("_", "form", Model.TipoArticolo, Model.CodiceArticolo, Model.NroLancio, Model.NroSottolancio);
@@ -15,7 +15,7 @@
 <td>@Model.Articolo?.Descrizione</td>
 <td>@Model.Articolo?.UnitaMisuraGestione</td>
 <td class="form-group">
-    <input asp-for="NuovaQuantitaAssegnazione" value="@Model.Assegnazioni.FirstOrDefault()?.Quantita"/>
+    <input class="form-control" type="number" asp-for="NuovaQuantitaAssegnazione" value="@Model.Assegnazioni.FirstOrDefault()?.Quantita" form="@formId" />
 </td>
 <td>
     <button type="submit" class="btn btn-outline-primary" form="@formId"><i class="bi bi-check-circle"></i></button>

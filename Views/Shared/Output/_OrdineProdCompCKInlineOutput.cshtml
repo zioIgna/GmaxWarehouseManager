@@ -18,7 +18,7 @@
 <td>@Model.CodiceArticolo</td>
 <td>@descr</td>
 <td>@Model.Articolo?.UnitaMisuraGestione</td>
-<td>@Model.Assegnazioni?.FirstOrDefault()?.Quantita</td>
+<td>@Model.Assegnazioni?.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault()?.Quantita</td>
 <td>
     <a 
         asp-action="InlineInput" 

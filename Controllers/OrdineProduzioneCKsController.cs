@@ -10,6 +10,7 @@ using Gmax.Models.Entities;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Extensions;
 using Gmax.Models.ExtensionMethods;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Gmax.Controllers
 {
@@ -90,6 +91,33 @@ namespace Gmax.Controllers
             }
 
             return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", ordineProdCompCK);
+        }
+
+        public async Task<IActionResult> EditInline(Models.ViewModels.OrdineProdCompCK.OrdineProdCompCKInlineInputViewModel opcInputModel)
+        {
+            if (opcInputModel == null)
+            {
+                return NotFound();
+            }
+            if (ModelState.IsValid)
+            {
+                OrdineProdCompCK? updatedOrdineProdCompCK = null;
+                try
+                {
+                    updatedOrdineProdCompCK = await ordineProduzioneCKService.AddAssegnazioneMagazzinoToOrdineProdCompAsync(opcInputModel);
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Non è stato possibile aggiornare la quantità dell'articolo con riferimenti TipoArticolo: {opcInputModel.TipoArticolo}, CodiceArticolo: {opcInputModel.CodiceArticolo}";
+                    return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
+                    //return BadRequest(ex.Message);
+                }
+                TempData["ConfirmationMessage"] = "Quantità aggiornata con successo";
+                return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", updatedOrdineProdCompCK);
+            }
+            IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            TempData["ErrorMessage"] = "Valori inseriti non corretti, non è stato possibile aggiornare la quantità articolo";
+            return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
         }
 
         //public async Task<IActionResult> InlineInput(int nroLancio, int nroSottolancio)

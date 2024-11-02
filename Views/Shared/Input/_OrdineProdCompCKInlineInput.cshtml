@@ -15,7 +15,7 @@
 <td>@Model.Articolo?.Descrizione</td>
 <td>@Model.Articolo?.UnitaMisuraGestione</td>
 <td class="form-group">
-    <input class="form-control" type="number" asp-for="NuovaQuantitaAssegnazione" value="@Model.Assegnazioni.FirstOrDefault()?.Quantita" form="@formId" />
+    <input class="form-control" type="number" asp-for="NuovaQuantitaAssegnazione" value="@Model.Assegnazioni?.FirstOrDefault()?.Quantita" form="@formId" />
 </td>
 <td>
     <button type="submit" class="btn btn-outline-primary" form="@formId"><i class="bi bi-check-circle"></i></button>
@@ -26,5 +26,10 @@
         asp-route-codicearticolo="@Model.CodiceArticolo"
         asp-route-nrolancio="@Model.NroLancio"
         asp-route-nrosottolancio="@Model.NroSottolancio"
-        data-ajax="true" data-ajax-mode="replace" data-ajax-update="@ordineProdCompCKVcId"><i class="bi bi-x-circle"></i></a>
+        data-ajax="true" data-ajax-mode="replace" data-ajax-update="@ordineProdCompCKVcId"><i class="bi bi-x-circle"></i>
+    </a>
+    @if (TempData["ErrorMessageInline"] != null)
+    {
+        <i class="bi bi-exclamation-circle" style="color:red"></i>
+    }
 </td>

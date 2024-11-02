@@ -13,7 +13,6 @@
 
     var ordineProdCompCKVcId = string.Concat("#", string.Join("_", "opc", Model.TipoArticolo, Model.CodiceArticolo, Model.NroLancio, Model.NroSottolancio));
 }
-
 <td>@Model.TipoArticolo</td>
 <td>@Model.CodiceArticolo</td>
 <td>@descr</td>
@@ -29,4 +28,8 @@
         data-ajax="true" data-ajax-mode="replace" data-ajax-update="@ordineProdCompCKVcId">
         <i class="bi bi-pencil-square"></i>
     </a>
+    @if(TempData["ConfirmationMessageInline"] != null)
+    {
+        <i class="bi bi-check-circle ms-1" style="color:forestgreen"></i>
+    }
 </td>

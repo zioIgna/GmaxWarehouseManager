@@ -77,6 +77,15 @@ namespace Gmax.Controllers
             return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", ordineProdCompCK.AsInlineInputViewModel());
         }
 
+        /// <summary>
+        /// Metodo non utilizzato
+        /// </summary>
+        /// <param name="tipoarticolo"></param>
+        /// <param name="codicearticolo"></param>
+        /// <param name="nrolancio"></param>
+        /// <param name="nrosottolancio"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task<IActionResult> InlineOutput(string tipoarticolo, string codicearticolo, int nrolancio, int nrosottolancio)
         {
             OrdineProduzioneCK? ordineProduzioneCK = await ordineProduzioneCKService.GetOrdineProduzioneCKByKeyAsync(nrolancio, nrosottolancio);
@@ -112,24 +121,15 @@ namespace Gmax.Controllers
                     return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
                     //return BadRequest(ex.Message);
                 }
-                TempData["ConfirmationMessage"] = "Quantità aggiornata con successo";
+                TempData["ConfirmationMessageInline"] = "Quantità aggiornata con successo";
                 return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", updatedOrdineProdCompCK);
             }
-            IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
-            TempData["ErrorMessage"] = "Valori inseriti non corretti, non è stato possibile aggiornare la quantità articolo";
+            //IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
+            TempData["ErrorMessageInline"] = "Valori inseriti non corretti, non è stato possibile aggiornare la quantità articolo";
             return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
         }
 
-        //public async Task<IActionResult> InlineInput(int nroLancio, int nroSottolancio)
-        //{
-        //    OrdineProduzioneCK? ordineProduzioneCK = await ordineProduzioneCKService.GetOrdineProduzioneCKByKeyAsync(nroLancio, nroSottolancio);
-        //    if (ordineProduzioneCK == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return PartialView("/Views/Shared/Input/_OrdineProduzioneCKInlineInput.cshtml", ordineProduzioneCK.AsRowListViewModel());
-        //}
-
+        #region Metodi da Scaffolding
         // GET: OrdineProduzioneCKs/Create
         public IActionResult Create()
         {
@@ -245,5 +245,6 @@ namespace Gmax.Controllers
         {
             return _context.OrdiniProduzioneCK.Any(e => e.NroLancio == id);
         }
+        #endregion
     }
 }

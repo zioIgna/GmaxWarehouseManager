@@ -56,9 +56,50 @@ namespace Gmax.Models.Services.OrdineCK
             {
                 throw new Exception($"Non è stato possibile recuperare l'ordine di produzione con riferimenti nroLancio: {nroLancio}, nroSottolancio: {nroSottolancio}");
             }
+            ordineProduzioneCK = await ConditionallyInitializeOPAsync(nroLancio, nroSottolancio, ordineProduzioneCK);
             var ordineProduzioneCKDetailViewModel = ordineProduzioneCK.AsDetailViewModel();
 
             return ordineProduzioneCKDetailViewModel;
+        }
+
+        private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK? ordineProduzioneCK)
+        {
+            var isOrdineProduzioneInitialized = true;
+            foreach (var opc in ordineProduzioneCK!.OrdineProdCompCKList)
+            {
+                if (opc.Assegnazioni == null || !opc.Assegnazioni.Any())
+                {
+                    isOrdineProduzioneInitialized = false;
+                    await InitializeAssegnazioni(nroLancio, nroSottolancio, opc);
+                }
+            }
+            if (!isOrdineProduzioneInitialized)
+            {
+                ordineProduzioneCK = await GetOrdineProduzioneCKByKeyAsync(nroLancio, nroSottolancio);
+                if (ordineProduzioneCK == null)
+                {
+                    throw new Exception($"Non è stato possibile recuperare l'ordine di produzione con riferimenti nroLancio: {nroLancio}, nroSottolancio: {nroSottolancio}");
+                }
+            }
+
+            return ordineProduzioneCK;
+        }
+
+        private async Task InitializeAssegnazioni(int nroLancio, int nroSottolancio, OrdineProdCompCK opc)
+        {
+            if (opc.Assegnazioni == null)
+            {
+                opc.Assegnazioni = new List<AssegnazioneMagazzino> { };
+            }
+            AssegnazioneMagazzino primaAssegnazioneMagazzino = new AssegnazioneMagazzino();
+            primaAssegnazioneMagazzino.NroLancio = nroLancio;
+            primaAssegnazioneMagazzino.NroSottolancio = nroSottolancio;
+            primaAssegnazioneMagazzino.CodiceArticolo = opc.CodiceArticolo;
+            primaAssegnazioneMagazzino.TipoArticolo = opc.TipoArticolo;
+            primaAssegnazioneMagazzino.Quantita = opc.QtaGiaScaricata;
+
+            await context.AssegnazioniMagazzino.AddAsync(primaAssegnazioneMagazzino);
+            await context.SaveChangesAsync();
         }
 
         public async Task<OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel)

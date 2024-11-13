@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Gmax.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Gmax.Models.Entities
 {
@@ -22,5 +23,7 @@ namespace Gmax.Models.Entities
         public OrdineProdCompCK OrdineProdCompCK { get; set; }
         public DateTime DataAssegnazione { get; set; } = DateTime.Now;
         public int Quantita { get; set; }
+        public int Delta { get; set; }
+        public SorgenteAssegnazione SorgenteAssegnazione { get; set; }
     }
 }

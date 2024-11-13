@@ -97,6 +97,9 @@ namespace Gmax.Models.Services.OrdineCK
             primaAssegnazioneMagazzino.CodiceArticolo = opc.CodiceArticolo;
             primaAssegnazioneMagazzino.TipoArticolo = opc.TipoArticolo;
             primaAssegnazioneMagazzino.Quantita = opc.QtaGiaScaricata;
+            primaAssegnazioneMagazzino.SorgenteAssegnazione = Enums.SorgenteAssegnazione.FromSystem;
+            primaAssegnazioneMagazzino.DataAssegnazione = DateTime.Now;
+            primaAssegnazioneMagazzino.Delta = 0;
 
             await context.AssegnazioniMagazzino.AddAsync(primaAssegnazioneMagazzino);
             await context.SaveChangesAsync();
@@ -115,6 +118,13 @@ namespace Gmax.Models.Services.OrdineCK
                 throw new Exception($"Ordine di produzione componente non trovato, TipoArticolo: {opcInputModel.TipoArticolo}, CodiceArticolo: {opcInputModel.CodiceArticolo}, NumLancio: {opcInputModel.NroLancio}, NumSottolancio: {opcInputModel.NroSottolancio}");
             }
 
+            AssegnazioneMagazzino lastAssegnazioneMagazzino = ordineProdCompCK.Assegnazioni.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault();
+            int quantitaPrecedente = 0;
+            if (lastAssegnazioneMagazzino != null)
+            {
+                quantitaPrecedente = lastAssegnazioneMagazzino.Quantita;
+            }
+
             AssegnazioneMagazzino assegnazioneMagazzino = new AssegnazioneMagazzino
             {
                 TipoArticolo = opcInputModel.TipoArticolo,
@@ -122,7 +132,9 @@ namespace Gmax.Models.Services.OrdineCK
                 NroLancio = opcInputModel.NroLancio,
                 NroSottolancio = opcInputModel.NroSottolancio,
                 DataAssegnazione = DateTime.Now,
-                Quantita = opcInputModel.NuovaQuantitaAssegnazione
+                Quantita = opcInputModel.NuovaQuantitaAssegnazione,
+                SorgenteAssegnazione = Enums.SorgenteAssegnazione.FromUser,
+                Delta = opcInputModel.NuovaQuantitaAssegnazione - quantitaPrecedente
             };
             ordineProdCompCK.Assegnazioni.Add(assegnazioneMagazzino);
             await context.SaveChangesAsync();

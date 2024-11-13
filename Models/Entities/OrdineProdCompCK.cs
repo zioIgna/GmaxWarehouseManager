@@ -30,7 +30,7 @@ namespace Gmax.Models.Entities
         [Precision(14, 4)]
         public decimal QtaPrevista { get; set; }
         [Precision(14, 4)]
-        public decimal QtaGiaScaricata { get; set; }
+        public int QtaGiaScaricata { get; set; }
 
         public List<AssegnazioneMagazzino> Assegnazioni { get; set; }
     }

@@ -85,13 +85,13 @@ namespace Gmax.Models.Services.OrdineCK
             return ordineProduzioneCK;
         }
 
-        private async Task InitializeAssegnazioni(int nroLancio, int nroSottolancio, OrdineProdCompCK opc)
+        private async Task InitializeAssegnazioni(int nroLancio, int nroSottolancio, Entities.OrdineProdCompCK opc)
         {
             if (opc.Assegnazioni == null)
             {
-                opc.Assegnazioni = new List<AssegnazioneMagazzino> { };
+                opc.Assegnazioni = new List<Entities.AssegnazioneMagazzino> { };
             }
-            AssegnazioneMagazzino primaAssegnazioneMagazzino = new AssegnazioneMagazzino();
+            Entities.AssegnazioneMagazzino primaAssegnazioneMagazzino = new Entities.AssegnazioneMagazzino();
             primaAssegnazioneMagazzino.NroLancio = nroLancio;
             primaAssegnazioneMagazzino.NroSottolancio = nroSottolancio;
             primaAssegnazioneMagazzino.CodiceArticolo = opc.CodiceArticolo;
@@ -105,27 +105,37 @@ namespace Gmax.Models.Services.OrdineCK
             await context.SaveChangesAsync();
         }
 
-        public async Task<OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel)
+        public async Task<Entities.OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel)
         {
             OrdineProduzioneCK? ordineProduzioneCK = await GetOrdineProduzioneCKByKeyAsync(opcInputModel.NroLancio, opcInputModel.NroSottolancio);
             if (ordineProduzioneCK == null)
             {
                 throw new Exception($"Non è stato possibile individuare l'ordine di produzione con Nro Lancio: {opcInputModel.NroLancio} e Nro Sottolancio: {opcInputModel.NroSottolancio}");
             }
-            OrdineProdCompCK? ordineProdCompCK = ordineProduzioneCK.OrdineProdCompCKList?.FirstOrDefault(opc => opc.TipoArticolo == opcInputModel.TipoArticolo && opc.CodiceArticolo == opcInputModel.CodiceArticolo);
+            Entities.OrdineProdCompCK? ordineProdCompCK = ordineProduzioneCK.OrdineProdCompCKList?.FirstOrDefault(opc => opc.TipoArticolo == opcInputModel.TipoArticolo && opc.CodiceArticolo == opcInputModel.CodiceArticolo);
             if (ordineProdCompCK == null)
             {
                 throw new Exception($"Ordine di produzione componente non trovato, TipoArticolo: {opcInputModel.TipoArticolo}, CodiceArticolo: {opcInputModel.CodiceArticolo}, NumLancio: {opcInputModel.NroLancio}, NumSottolancio: {opcInputModel.NroSottolancio}");
             }
 
-            AssegnazioneMagazzino lastAssegnazioneMagazzino = ordineProdCompCK.Assegnazioni.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault();
+            Entities.AssegnazioneMagazzino lastAssegnazioneMagDaSistema = ordineProdCompCK.Assegnazioni.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault(a => a.SorgenteAssegnazione == Enums.SorgenteAssegnazione.FromSystem);
+            if (lastAssegnazioneMagDaSistema != null)
+            {
+                var oldAssegnazioniMag = ordineProdCompCK.Assegnazioni.Where(a => a.DataAssegnazione < lastAssegnazioneMagDaSistema.DataAssegnazione);
+                if (oldAssegnazioniMag != null && oldAssegnazioniMag.Any())
+                {
+                    context.RemoveRange(oldAssegnazioniMag);
+                }
+            }
+
+            Entities.AssegnazioneMagazzino lastAssegnazioneMagazzino = ordineProdCompCK.Assegnazioni.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault();
             int quantitaPrecedente = 0;
             if (lastAssegnazioneMagazzino != null)
             {
                 quantitaPrecedente = lastAssegnazioneMagazzino.Quantita;
             }
 
-            AssegnazioneMagazzino assegnazioneMagazzino = new AssegnazioneMagazzino
+            Entities.AssegnazioneMagazzino assegnazioneMagazzino = new Entities.AssegnazioneMagazzino
             {
                 TipoArticolo = opcInputModel.TipoArticolo,
                 CodiceArticolo = opcInputModel.CodiceArticolo,
@@ -144,7 +154,7 @@ namespace Gmax.Models.Services.OrdineCK
             {
                 throw new Exception($"Non è stato possibile aggiornare la quantità per l'articolo con riferimenti TipoArticolo: {opcInputModel.TipoArticolo} e CodiceArticolo: {opcInputModel.CodiceArticolo}");
             }
-            OrdineProdCompCK? updatedOrdineProdCompCK = updatedOrdineProduzioneCK.OrdineProdCompCKList.FirstOrDefault(opc => opc.TipoArticolo == opcInputModel.TipoArticolo && opc.CodiceArticolo == opcInputModel.CodiceArticolo);
+            Entities.OrdineProdCompCK? updatedOrdineProdCompCK = updatedOrdineProduzioneCK.OrdineProdCompCKList.FirstOrDefault(opc => opc.TipoArticolo == opcInputModel.TipoArticolo && opc.CodiceArticolo == opcInputModel.CodiceArticolo);
             if (updatedOrdineProdCompCK == null)
             {
                 throw new Exception($"Non è stato possibile recuperare la nuova quantità per l'articolo con riferimenti TipoArticolo: {opcInputModel.TipoArticolo} e CodiceArticolo: {opcInputModel.CodiceArticolo}");

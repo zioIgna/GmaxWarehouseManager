@@ -10,6 +10,6 @@ namespace Gmax.Models.Services.OrdineCK
         Task<ICollection<OrdineProduzioneCK>> GetOrdineProduzioneCKListAsync();
         Task<OrdineProduzioneCKListViewModel> GetOrdineProdCKListViewModelAsync();
         Task<OrdineProduzioneCKDetailViewModel> GetOrdineProduzioneCKDetailViewModelAsync(int nroLancio, int nroSottolancio);
-        Task<OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel);
+        Task<Entities.OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel);
     }
 }

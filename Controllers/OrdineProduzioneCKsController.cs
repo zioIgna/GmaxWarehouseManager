@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Services.OrdineCK;
-using Gmax.Models.Extensions;
 using Gmax.Models.ExtensionMethods;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Gmax.Controllers
 {
@@ -118,15 +112,15 @@ namespace Gmax.Controllers
                 catch (Exception ex)
                 {
                     TempData["ErrorMessage"] = $"Non è stato possibile aggiornare la quantità dell'articolo con riferimenti TipoArticolo: {opcInputModel.TipoArticolo}, CodiceArticolo: {opcInputModel.CodiceArticolo}";
-                    return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
-                    //return BadRequest(ex.Message);
+                    return RedirectToAction(nameof(InlineInput), new { tipoArticolo = opcInputModel.TipoArticolo, codArticolo = opcInputModel.CodiceArticolo, nroLancio = opcInputModel.NroLancio, nroSottolancio = opcInputModel.NroSottolancio });
                 }
                 TempData["ConfirmationMessageInline"] = "Quantità aggiornata con successo";
                 return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", updatedOrdineProdCompCK);
             }
             //IEnumerable<ModelError> allErrors = ModelState.Values.SelectMany(v => v.Errors);
             TempData["ErrorMessageInline"] = "Valori inseriti non corretti, non è stato possibile aggiornare la quantità articolo";
-            return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
+            return RedirectToAction(nameof(InlineInput), new { tipoArticolo = opcInputModel.TipoArticolo, codiceArticolo = opcInputModel.CodiceArticolo, nroLancio = opcInputModel.NroLancio, nroSottolancio = opcInputModel.NroSottolancio });
+            //return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
         }
 
         #region Metodi da Scaffolding

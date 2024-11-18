@@ -12,9 +12,6 @@ namespace Gmax.Data
             
         }
 
-        public DbSet<Articolo> ArticoliIntKey { get; set; }
-        public DbSet<OrdineProduzione> OrdiniProduzioneIntKey { get; set; }
-        public DbSet<OrdineProdComp> OrdiniProdCompIntKey { get; set; }
         public DbSet<ArticoloCK> ArticoliCK { get; set; }
         public DbSet<OrdineProduzioneCK> OrdiniProduzioneCK { get; set; }
         public DbSet<OrdineProdCompCK> OrdiniProdCompCK { get; set; }
@@ -23,15 +20,6 @@ namespace Gmax.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Articolo>()
-                .HasMany(e => e.OrdineProduzioneLancioList)
-                .WithOne(e => e.ArtLancio)
-                .HasForeignKey(e => e.ArtLancioId)
-                .HasPrincipalKey(e => e.Id);
-            modelBuilder.Entity<Articolo>()
-                .HasMany(e => e.OrdineProduzioneComponenteList)
-                .WithMany(e => e.ArtComponenteList)
-                .UsingEntity<OrdineProdComp>();
 
             modelBuilder.Entity<ArticoloCK>()
                 .HasMany(art => art.OrdineProduzioneLancioList)

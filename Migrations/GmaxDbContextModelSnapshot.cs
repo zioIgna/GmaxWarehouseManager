@@ -4,7 +4,7 @@ using Gmax.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Oracle.EntityFrameworkCore.Metadata;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
@@ -17,46 +17,46 @@ namespace Gmax.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.10")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("Gmax.Models.Entities.ArticoloCK", b =>
                 {
                     b.Property<string>("TipoArticolo")
                         .HasMaxLength(3)
-                        .HasColumnType("NVARCHAR2(3)");
+                        .HasColumnType("character varying(3)");
 
                     b.Property<string>("CodiceArticolo")
                         .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR2(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("CodCostruttore")
                         .HasMaxLength(256)
-                        .HasColumnType("NVARCHAR2(256)");
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("CodUbicazione")
                         .HasMaxLength(6)
-                        .HasColumnType("NVARCHAR2(6)");
+                        .HasColumnType("character varying(6)");
 
                     b.Property<DateTime?>("DataInserimento")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Descrizione")
                         .HasMaxLength(120)
-                        .HasColumnType("NVARCHAR2(120)");
+                        .HasColumnType("character varying(120)");
 
                     b.Property<int?>("QtaImpCliente")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<decimal?>("QtaScortaMin")
                         .HasPrecision(14, 4)
-                        .HasColumnType("DECIMAL(14,4)");
+                        .HasColumnType("numeric(14,4)");
 
                     b.Property<string>("UnitaMisuraGestione")
                         .HasMaxLength(3)
-                        .HasColumnType("NVARCHAR2(3)");
+                        .HasColumnType("character varying(3)");
 
                     b.HasKey("TipoArticolo", "CodiceArticolo");
 
@@ -67,37 +67,37 @@ namespace Gmax.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("CodiceArticolo")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR2(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<DateTime>("DataAssegnazione")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("Delta")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("NroLancio")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("NroSottolancio")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Quantita")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SorgenteAssegnazione")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("TipoArticolo")
                         .IsRequired()
                         .HasMaxLength(3)
-                        .HasColumnType("NVARCHAR2(3)");
+                        .HasColumnType("character varying(3)");
 
                     b.HasKey("Id");
 
@@ -109,32 +109,32 @@ namespace Gmax.Migrations
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProdCompCK", b =>
                 {
                     b.Property<int>("NroLancio")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("NroSottolancio")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("TipoArticolo")
                         .HasMaxLength(3)
-                        .HasColumnType("NVARCHAR2(3)");
+                        .HasColumnType("character varying(3)");
 
                     b.Property<string>("CodiceArticolo")
                         .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR2(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<int>("QtaGiaScaricata")
                         .HasPrecision(14, 4)
-                        .HasColumnType("NUMBER(14,4)");
+                        .HasColumnType("integer");
 
                     b.Property<decimal>("QtaPrevista")
                         .HasPrecision(14, 4)
-                        .HasColumnType("DECIMAL(14,4)");
+                        .HasColumnType("numeric(14,4)");
 
                     b.Property<int>("SeqArt")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("SeqOp")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.HasKey("NroLancio", "NroSottolancio", "TipoArticolo", "CodiceArticolo");
 
@@ -146,31 +146,31 @@ namespace Gmax.Migrations
             modelBuilder.Entity("Gmax.Models.Entities.OrdineProduzioneCK", b =>
                 {
                     b.Property<int>("NroLancio")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<int>("NroSottolancio")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("integer");
 
                     b.Property<string>("CodArtLancio")
                         .IsRequired()
                         .HasMaxLength(30)
-                        .HasColumnType("NVARCHAR2(30)");
+                        .HasColumnType("character varying(30)");
 
                     b.Property<DateTime>("DataCreazione")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DataPrevCons")
-                        .HasColumnType("TIMESTAMP(7)");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Stato")
                         .IsRequired()
                         .HasMaxLength(6)
-                        .HasColumnType("NVARCHAR2(6)");
+                        .HasColumnType("character varying(6)");
 
                     b.Property<string>("TipoArtLancio")
                         .IsRequired()
                         .HasMaxLength(3)
-                        .HasColumnType("NVARCHAR2(3)");
+                        .HasColumnType("character varying(3)");
 
                     b.HasKey("NroLancio", "NroSottolancio");
 

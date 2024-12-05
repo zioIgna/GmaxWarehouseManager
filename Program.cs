@@ -1,4 +1,5 @@
 using Gmax.Data;
+using Gmax.Extensions;
 using Gmax.Models.Services.ArticoloCK;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
@@ -7,10 +8,14 @@ using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var conn = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<GmaxDbContext>(options =>
     //options.UseOracle(@"User Id=gmax_user;Password=gMaxDevelopment2024;Data Source=pdborcl;")
     //options.UseOracle(@"User Id=gmax_user;Password=gMaxDevelopment2024;Data Source=localhost:1521/FREEPDB1;")
-    options.UseOracle(@"User Id=gmax_user;Password=gMaxDevelopment2024;Data Source=oracleDb:1521/FREEPDB1;")
+    //options.UseOracle(@"User Id=gmax_user;Password=gMaxDevelopment2024;Data Source=oracleDb:1521/FREEPDB1;")
+    //options.UseNpgsql(builder.Configuration.GetConnectionString(conn))
+    options.UseNpgsql("User ID=gmax_user;Password=gMaxDevelopment2024;Server=postgresDb;Port=5432;Database=postgresDb;Pooling=true;")
     //options.UseOracle(@"SERVER=(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521))(CONNECT_DATA=(SERVICE_NAME=FREEPDB1)));uid=gmax_user ;pwd=gMaxDevelopment2024;")
     );
 
@@ -23,6 +28,8 @@ builder.Services.AddTransient<IArticoloCKService, ArticoloCKService>();
 builder.Services.AddTransient<IOrdineProdCompCKService, OrdineProdCompCKService>();
 
 var app = builder.Build();
+
+app.ApplyMigrations();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

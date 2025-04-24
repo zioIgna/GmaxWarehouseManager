@@ -17,6 +17,7 @@
 <td>@Model.CodiceArticolo</td>
 <td>@descr</td>
 <td>@Model.Articolo?.UnitaMisuraGestione</td>
+<td>@Model.QtaPrevista.ToString("0")</td>
 <td>@Model.Assegnazioni?.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault()?.Quantita</td>
 <td>
     <a 

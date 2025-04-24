@@ -62,10 +62,10 @@ namespace Gmax.Models.Services.OrdineCK
             return ordineProduzioneCKDetailViewModel;
         }
 
-        private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK? ordineProduzioneCK)
+        private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK ordineProduzioneCK)
         {
             var isOrdineProduzioneInitialized = true;
-            foreach (var opc in ordineProduzioneCK!.OrdineProdCompCKList)
+            foreach (var opc in ordineProduzioneCK.OrdineProdCompCKList)
             {
                 if (opc.Assegnazioni == null || !opc.Assegnazioni.Any())
                 {
@@ -107,6 +107,21 @@ namespace Gmax.Models.Services.OrdineCK
 
         public async Task<Entities.OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel)
         {
+            Entities.OrdineProdCompCK currentOrdineProdCompCK = await GetCurrentOrdineProdCompCKAsync(opcInputModel);
+
+            RemoveAssegnazioniBeforeLastAssegnazioneFromSystem(currentOrdineProdCompCK);
+
+            CreateNewAssegnazioneFromUser(opcInputModel, currentOrdineProdCompCK);
+
+            await context.SaveChangesAsync();
+
+            Entities.OrdineProdCompCK updatedOrdineProdCompCK = await GetUpdatedOrdineProdCompCK(opcInputModel);
+
+            return updatedOrdineProdCompCK;
+        }
+
+        private async Task<Entities.OrdineProdCompCK> GetCurrentOrdineProdCompCKAsync(OrdineProdCompCKInlineInputViewModel opcInputModel)
+        {
             OrdineProduzioneCK? ordineProduzioneCK = await GetOrdineProduzioneCKByKeyAsync(opcInputModel.NroLancio, opcInputModel.NroSottolancio);
             if (ordineProduzioneCK == null)
             {
@@ -118,17 +133,25 @@ namespace Gmax.Models.Services.OrdineCK
                 throw new Exception($"Ordine di produzione componente non trovato, TipoArticolo: {opcInputModel.TipoArticolo}, CodiceArticolo: {opcInputModel.CodiceArticolo}, NumLancio: {opcInputModel.NroLancio}, NumSottolancio: {opcInputModel.NroSottolancio}");
             }
 
-            Entities.AssegnazioneMagazzino lastAssegnazioneMagDaSistema = ordineProdCompCK.Assegnazioni.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault(a => a.SorgenteAssegnazione == Enums.SorgenteAssegnazione.FromSystem);
+            return ordineProdCompCK;
+        }
+
+        private void RemoveAssegnazioniBeforeLastAssegnazioneFromSystem(Entities.OrdineProdCompCK ordineProdCompCK)
+        {
+            Entities.AssegnazioneMagazzino? lastAssegnazioneMagDaSistema = ordineProdCompCK.Assegnazioni?.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault(a => a.SorgenteAssegnazione == Enums.SorgenteAssegnazione.FromSystem);
             if (lastAssegnazioneMagDaSistema != null)
             {
-                var oldAssegnazioniMag = ordineProdCompCK.Assegnazioni.Where(a => a.DataAssegnazione < lastAssegnazioneMagDaSistema.DataAssegnazione);
+                var oldAssegnazioniMag = ordineProdCompCK.Assegnazioni?.Where(a => a.DataAssegnazione < lastAssegnazioneMagDaSistema.DataAssegnazione);
                 if (oldAssegnazioniMag != null && oldAssegnazioniMag.Any())
                 {
                     context.RemoveRange(oldAssegnazioniMag);
                 }
             }
+        }
 
-            Entities.AssegnazioneMagazzino lastAssegnazioneMagazzino = ordineProdCompCK.Assegnazioni.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault();
+        private static void CreateNewAssegnazioneFromUser(OrdineProdCompCKInlineInputViewModel opcInputModel, Entities.OrdineProdCompCK ordineProdCompCK)
+        {
+            Entities.AssegnazioneMagazzino? lastAssegnazioneMagazzino = ordineProdCompCK.Assegnazioni?.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault();
             int quantitaPrecedente = 0;
             if (lastAssegnazioneMagazzino != null)
             {
@@ -147,8 +170,10 @@ namespace Gmax.Models.Services.OrdineCK
                 Delta = opcInputModel.NuovaQuantitaAssegnazione - quantitaPrecedente
             };
             ordineProdCompCK.Assegnazioni.Add(assegnazioneMagazzino);
-            await context.SaveChangesAsync();
+        }
 
+        private async Task<Entities.OrdineProdCompCK> GetUpdatedOrdineProdCompCK(OrdineProdCompCKInlineInputViewModel opcInputModel)
+        {
             OrdineProduzioneCK? updatedOrdineProduzioneCK = await GetOrdineProduzioneCKByKeyAsync(opcInputModel.NroLancio, opcInputModel.NroSottolancio);
             if (updatedOrdineProduzioneCK == null)
             {

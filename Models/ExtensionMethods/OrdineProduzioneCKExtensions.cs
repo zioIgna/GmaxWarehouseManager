@@ -32,7 +32,8 @@ namespace Gmax.Models.Extensions
             detailViewModel.DataCreazione = ordineProduzioneCK.DataCreazione;
             detailViewModel.DataPrevCons = ordineProduzioneCK.DataPrevCons;
             detailViewModel.ArtComponenteList = ordineProduzioneCK.ArtComponenteList;
-            detailViewModel.OrdineProdCompCKList = ordineProduzioneCK.OrdineProdCompCKList;
+            detailViewModel.OrdineProdCompCKList = ordineProduzioneCK.OrdineProdCompCKList
+                                                    .Select(opc => opc.AsListViewModel()).ToList();
 
             return detailViewModel;
         }

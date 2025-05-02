@@ -1,5 +1,6 @@
-﻿@using Gmax.Models.Entities
-@model OrdineProdCompCK
+﻿@using Gmax.Models.ViewModels.OrdineProdCompCK
+@model OrdineProdCompCKListViewModel
+
 @{
     var descr = string.Empty;
     if (Model.Articolo != null && !string.IsNullOrWhiteSpace(Model.Articolo?.Descrizione))
@@ -19,6 +20,7 @@
 <td>@Model.Articolo?.UnitaMisuraGestione</td>
 <td>@Model.QtaPrevista.ToString("0")</td>
 <td>@Model.Assegnazioni?.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault()?.Quantita</td>
+<td>@Model.FabbisognoGlobale.ToString("0")</td>
 <td>
     <a 
         asp-action="InlineInput" 

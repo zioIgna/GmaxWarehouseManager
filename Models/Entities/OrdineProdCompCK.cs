@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Gmax.Models.ViewModels.OrdineProdCompCK;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Gmax.Models.Entities
@@ -33,5 +34,23 @@ namespace Gmax.Models.Entities
         public int QtaGiaScaricata { get; set; }
 
         public List<AssegnazioneMagazzino> Assegnazioni { get; set; }
+
+        public OrdineProdCompCKListViewModel AsListViewModel()
+        {
+            OrdineProdCompCKListViewModel listViewModel = new();
+            listViewModel.NroLancio = NroLancio;
+            listViewModel.NroSottolancio = NroSottolancio;
+            listViewModel.OrdineProduzioneCK = OrdineProduzioneCK;
+            listViewModel.SeqOp = SeqOp;
+            listViewModel.SeqArt = SeqArt;
+            listViewModel.TipoArticolo = TipoArticolo;
+            listViewModel.CodiceArticolo = CodiceArticolo;
+            listViewModel.Articolo = Articolo;
+            listViewModel.QtaPrevista = QtaPrevista;
+            listViewModel.QtaGiaScaricata = QtaGiaScaricata;
+            listViewModel.Assegnazioni = Assegnazioni;
+
+            return listViewModel;
+        }
     }
 }

@@ -5,6 +5,7 @@ using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.ExtensionMethods;
+using Gmax.Models.Extensions;
 
 namespace Gmax.Controllers
 {
@@ -93,7 +94,9 @@ namespace Gmax.Controllers
                 throw new Exception($"Ordine di produzione componente non trovato, TipoArticolo: {tipoarticolo}, CodiceArticolo: {codicearticolo}, NumLancio: {nrolancio}, NumSottolancio: {nrosottolancio}");
             }
 
-            return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", ordineProdCompCK);
+            var ordineProdCompCKListViewModel = ordineProduzioneCK.AsDetailViewModel();
+
+            return PartialView("/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml", ordineProdCompCKListViewModel);
         }
 
         public async Task<IActionResult> EditInline(Models.ViewModels.OrdineProdCompCK.OrdineProdCompCKInlineInputViewModel opcInputModel)

@@ -1,6 +1,7 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Extensions;
+using Gmax.Models.Services.OrdineProdCompCK;
 using Gmax.Models.ViewModels.OrdineCK;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace Gmax.Models.Services.OrdineCK
     public class OrdineProduzioneCKService : IOrdineProduzioneCKService
     {
         private readonly GmaxDbContext context;
+        private readonly IOrdineProdCompCKService ordineProdCompCKService;
 
-        public OrdineProduzioneCKService(GmaxDbContext _context)
+        public OrdineProduzioneCKService(GmaxDbContext _context, IOrdineProdCompCKService ordineProdCompCKService)
         {
             this.context = _context;
+            this.ordineProdCompCKService = ordineProdCompCKService;
         }
 
         public async Task<ICollection<OrdineProduzioneCK>> GetOrdineProduzioneCKListAsync()
@@ -58,8 +61,20 @@ namespace Gmax.Models.Services.OrdineCK
             }
             ordineProduzioneCK = await ConditionallyInitializeOPAsync(nroLancio, nroSottolancio, ordineProduzioneCK);
             var ordineProduzioneCKDetailViewModel = ordineProduzioneCK.AsDetailViewModel();
+            ordineProduzioneCKDetailViewModel = await CalculateFabbisognoGlobaleForEachOpc(ordineProduzioneCKDetailViewModel);
 
             return ordineProduzioneCKDetailViewModel;
+        }
+
+        private async Task<OrdineProduzioneCKDetailViewModel> CalculateFabbisognoGlobaleForEachOpc(OrdineProduzioneCKDetailViewModel ordineProduzioneCK)
+        {
+            foreach (var opc in ordineProduzioneCK.OrdineProdCompCKList)
+            {
+                var opcPianificatoList = await ordineProdCompCKService.GetPianificatoOpcListAsync(opc.TipoArticolo, opc.CodiceArticolo);
+                opc.FabbisognoGlobale = opcPianificatoList.Sum(opc => opc.QtaPrevista);
+            }
+
+            return ordineProduzioneCK;
         }
 
         private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK ordineProduzioneCK)

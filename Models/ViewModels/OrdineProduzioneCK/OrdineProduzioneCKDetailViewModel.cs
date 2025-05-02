@@ -1,4 +1,5 @@
 ﻿using Gmax.Models.Entities;
+using Gmax.Models.ViewModels.OrdineProdCompCK;
 using System.ComponentModel.DataAnnotations;
 
 namespace Gmax.Models.ViewModels.OrdineCK
@@ -14,6 +15,6 @@ namespace Gmax.Models.ViewModels.OrdineCK
         public DateTime DataCreazione { get; set; }
         public DateTime DataPrevCons { get; set; }
         public List<Entities.ArticoloCK> ArtComponenteList { get; set; } = [];
-        public List<Entities.OrdineProdCompCK> OrdineProdCompCKList { get; set; } = [];
+        public List<OrdineProdCompCKListViewModel> OrdineProdCompCKList { get; set; } = [];
     }
 }

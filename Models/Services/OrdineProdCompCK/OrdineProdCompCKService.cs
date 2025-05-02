@@ -1,5 +1,7 @@
 ﻿using Gmax.Data;
+using Gmax.Models.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 
 namespace Gmax.Models.Services.OrdineProdCompCK
 {
@@ -31,6 +33,24 @@ namespace Gmax.Models.Services.OrdineProdCompCK
             Entities.AssegnazioneMagazzino? ultimaAssegnazioneMagazzino = ordineProdCompCK.Assegnazioni.FirstOrDefault();
 
             return ultimaAssegnazioneMagazzino;
+        }
+
+        private IQueryable<Entities.OrdineProdCompCK> GetOpcListByTipoAndCodiceArt(string tipoArticolo, string codArticolo)
+        {
+            var query = context.OrdiniProdCompCK
+                .Include(opc => opc.OrdineProduzioneCK)
+                .Where(opc => opc.TipoArticolo.Equals(tipoArticolo)
+                    && opc.CodiceArticolo.Equals(codArticolo));
+
+            return query;
+        }
+
+        public async Task<IEnumerable<Entities.OrdineProdCompCK>> GetPianificatoOpcListAsync(string tipoArticolo, string codArticolo)
+        {
+            IQueryable<Entities.OrdineProdCompCK> opcList = GetOpcListByTipoAndCodiceArt(tipoArticolo, codArticolo);
+            IQueryable<Entities.OrdineProdCompCK> filteredList = opcList.Where(opc => opc.OrdineProduzioneCK.Stato.Equals("P"));
+
+            return await filteredList.ToListAsync();
         }
     }
 }

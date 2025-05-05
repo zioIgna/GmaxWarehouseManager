@@ -21,6 +21,10 @@ namespace Gmax.Models.Entities
         [Required]
         public string CodiceArticolo { get; set; }
         public OrdineProdCompCK OrdineProdCompCK { get; set; }
+        public int MagazzinoOrigineId { get; set; }
+        public Magazzino MagazzinoOrigine { get; set; }
+        public int MagazzinoDestinazioneId { get; set; }
+        public Magazzino MagazzinoDestinazione { get; set; }
         public DateTime DataAssegnazione { get; set; } = DateTime.Now;
         public int Quantita { get; set; }
         public int Delta { get; set; }

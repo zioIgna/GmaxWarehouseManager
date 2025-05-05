@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Gmax.Models.Entities
 {
+    [Index(nameof(NroLancio), nameof(NroSottolancio), IsUnique = true)]
     public class Magazzino
     {
         public int Id { get; set; }
@@ -21,7 +22,7 @@ namespace Gmax.Models.Entities
         public DateTime DataAssegnazione { get; set; } = DateTime.Now;
         public StatoAttivo statoAttivo { get; set; }
         public TipoMagazzino TipoMagazzino { get; set; }
-        public IEnumerable<AssegnazioneMagazzino> AssegnazioneOrigineList { get; set; }
-        public IEnumerable<AssegnazioneMagazzino> AssegnazioneDestinazioneList { get; set; }
+        public List<AssegnazioneMagazzino> AssegnazioneOrigineList { get; set; } = [];
+        public List<AssegnazioneMagazzino> AssegnazioneDestinazioneList { get; set; } = [];
     }
 }

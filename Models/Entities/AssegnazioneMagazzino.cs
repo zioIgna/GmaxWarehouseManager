@@ -21,9 +21,9 @@ namespace Gmax.Models.Entities
         [Required]
         public string CodiceArticolo { get; set; }
         public OrdineProdCompCK OrdineProdCompCK { get; set; }
-        public int MagazzinoOrigineId { get; set; }
+        public int MagazzinoOrigineId { get; set; } = 1;
         public Magazzino MagazzinoOrigine { get; set; }
-        public int MagazzinoDestinazioneId { get; set; }
+        public int MagazzinoDestinazioneId { get; set; } = 1;
         public Magazzino MagazzinoDestinazione { get; set; }
         public DateTime DataAssegnazione { get; set; } = DateTime.Now;
         public int Quantita { get; set; }

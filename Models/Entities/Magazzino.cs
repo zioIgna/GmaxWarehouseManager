@@ -12,16 +12,16 @@ namespace Gmax.Models.Entities
         public string Name 
         {
             get => _name;
-            set => _name = NroLancio.ToString() + NroSottolancio.ToString();
+            set => _name = NroLancio.ToString() + "-" + NroSottolancio.ToString();
         }
         [Range(0, 99999999)]
-        public int NroLancio { get; set; }
+        public int? NroLancio { get; set; }
         [Range(0, 999)]
-        public int NroSottolancio { get; set; }
+        public int? NroSottolancio { get; set; }
         public OrdineProduzioneCK? OrdineProduzioneCK { get; set; }
         public DateTime DataAssegnazione { get; set; } = DateTime.Now;
-        public StatoAttivo statoAttivo { get; set; }
-        public TipoMagazzino TipoMagazzino { get; set; }
+        public StatoAttivo statoAttivo { get; set; } = StatoAttivo.Attivo;
+        public TipoMagazzino TipoMagazzino { get; set; } = TipoMagazzino.Virtuale;
         public List<AssegnazioneMagazzino> AssegnazioneOrigineList { get; set; } = [];
         public List<AssegnazioneMagazzino> AssegnazioneDestinazioneList { get; set; } = [];
     }

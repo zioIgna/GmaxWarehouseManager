@@ -8,11 +8,11 @@ namespace Gmax.Models.Entities
     public class Magazzino
     {
         public int Id { get; set; }
-        private string _name;
-        public string Name 
+        private string _codMagazzino;
+        public string CodMagazzino 
         {
-            get => _name;
-            set => _name = NroLancio.ToString() + "-" + NroSottolancio.ToString();
+            get => _codMagazzino;
+            set => _codMagazzino = NroLancio.ToString() + "-" + NroSottolancio.ToString();
         }
         [Range(0, 99999999)]
         public int? NroLancio { get; set; }

@@ -17,6 +17,8 @@ namespace Gmax.Data
         public DbSet<OrdineProdCompCK> OrdiniProdCompCK { get; set; }
         public DbSet<AssegnazioneMagazzino> AssegnazioniMagazzino { get; set; }
         public DbSet<Magazzino> Magazzino { get; set; }
+        public DbSet<ExpGiacenza> ExpGiacenze { get; set; }
+        public DbSet<ExpOrdiniAcq> ExpOrdiniAcquisto { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -34,5 +34,6 @@ namespace Gmax.Models.Entities
         public List<OrdineProduzioneCK> OrdineProduzioneLancioList { get; set; } = new List<OrdineProduzioneCK>();
         public List<OrdineProduzioneCK> OrdineProduzioneComponenteList { get; set; } = new List<OrdineProduzioneCK>();
         public List<OrdineProdCompCK> OrdineProdCompCKList { get; set; }
+        public ExpGiacenza? Giacenza { get; set; }
     }
 }

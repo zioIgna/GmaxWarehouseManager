@@ -24,5 +24,6 @@ namespace Gmax.Models.Entities
         public TipoMagazzino TipoMagazzino { get; set; } = TipoMagazzino.Virtuale;
         public List<AssegnazioneMagazzino> AssegnazioneOrigineList { get; set; } = [];
         public List<AssegnazioneMagazzino> AssegnazioneDestinazioneList { get; set; } = [];
+        public ExpGiacenza Giacenza { get; set; }
     }
 }

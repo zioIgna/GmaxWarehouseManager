@@ -13,9 +13,11 @@ namespace Gmax.Models.Entities
         [MaxLength(30)]
         [Required]
         public string CodiceArticolo { get; set; }
+        public ArticoloCK Articolo { get; set; }
 
         [Required]
         public string CodMagazzino { get; set; }
+        public Magazzino Magazzino { get; set; }
         public int QtaGiacenza { get; set; }
         public DateTime DataInserimento { get; set; }
     }

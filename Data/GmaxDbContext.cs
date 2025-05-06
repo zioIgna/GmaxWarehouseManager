@@ -48,6 +48,15 @@ namespace Gmax.Data
                 .WithOne(o => o.Magazzino)
                 .HasForeignKey<Magazzino>(m => new { m.NroLancio, m.NroSottolancio });
 
+            modelBuilder.Entity<ExpGiacenza>()
+                .HasOne(g => g.Articolo)
+                .WithOne(a => a.Giacenza)
+                .HasForeignKey<ExpGiacenza>(g => new { g.CodMagazzino });
+            modelBuilder.Entity<ExpGiacenza>()
+                .HasOne(g => g.Magazzino)
+                .WithOne(m => m.Giacenza)
+                .HasForeignKey<ExpGiacenza>(g => g.CodMagazzino);
+
             modelBuilder.Entity<AssegnazioneMagazzino>()
                 .HasOne(am => am.MagazzinoOrigine)
                 .WithMany(m => m.AssegnazioneOrigineList)

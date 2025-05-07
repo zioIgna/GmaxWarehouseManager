@@ -21,6 +21,7 @@
 <td>@Model.QtaPrevista.ToString("0")</td>
 <td>@Model.Assegnazioni?.OrderByDescending(a => a.DataAssegnazione).FirstOrDefault()?.Quantita</td>
 <td>@Model.FabbisognoGlobale.ToString("0")</td>
+<td>@Model.DisponibilitaGlobale.ToString("0")</td>
 <td>
     <a 
         asp-action="InlineInput" 

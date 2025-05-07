@@ -43,6 +43,7 @@ namespace Gmax.Models.Services.OrdineCK
                     .ThenInclude(opc => opc.Assegnazioni.OrderByDescending(a => a.DataAssegnazione))
                 .Include(op => op.OrdineProdCompCKList)
                     .ThenInclude(opc => opc.Articolo)
+                        .ThenInclude(a => a.GiacenzaList.Where(g => g.CodMagazzino.Equals("MAG01")))
                 .Include(op => op.ArtLancio)
                 //.Include(op => op.ArtComponenteList)
                 //    .ThenInclude(a => a.OrdineProdCompCKList)
@@ -61,20 +62,32 @@ namespace Gmax.Models.Services.OrdineCK
             }
             ordineProduzioneCK = await ConditionallyInitializeOPAsync(nroLancio, nroSottolancio, ordineProduzioneCK);
             var ordineProduzioneCKDetailViewModel = ordineProduzioneCK.AsDetailViewModel();
-            ordineProduzioneCKDetailViewModel = await CalculateFabbisognoGlobaleForEachOpc(ordineProduzioneCKDetailViewModel);
+            ordineProduzioneCKDetailViewModel = await CalculateGlobalValues(ordineProduzioneCKDetailViewModel);
 
             return ordineProduzioneCKDetailViewModel;
         }
 
-        private async Task<OrdineProduzioneCKDetailViewModel> CalculateFabbisognoGlobaleForEachOpc(OrdineProduzioneCKDetailViewModel ordineProduzioneCK)
+        private async Task<OrdineProduzioneCKDetailViewModel> CalculateGlobalValues(OrdineProduzioneCKDetailViewModel ordineProduzioneCK)
         {
             foreach (var opc in ordineProduzioneCK.OrdineProdCompCKList)
             {
-                var opcPianificatoList = await ordineProdCompCKService.GetPianificatoOpcListAsync(opc.TipoArticolo, opc.CodiceArticolo);
-                opc.FabbisognoGlobale = opcPianificatoList.Sum(opc => opc.QtaPrevista);
+                await CalculateFabbisognoGlobale(opc);
+                CalculateDisponibilitaGlobale(opc);
             }
 
             return ordineProduzioneCK;
+        }
+
+        private async Task CalculateFabbisognoGlobale(OrdineProdCompCKListViewModel opc)
+        {
+            var opcPianificatoList = await ordineProdCompCKService.GetPianificatoOpcListAsync(opc.TipoArticolo, opc.CodiceArticolo);
+            opc.FabbisognoGlobale = opcPianificatoList.Sum(opc => opc.QtaPrevista);
+        }
+
+        private static void CalculateDisponibilitaGlobale(OrdineProdCompCKListViewModel opc)
+        {
+            var giacenza = opc.Articolo?.GiacenzaList?.FirstOrDefault();
+            opc.DisponibilitaGlobale = (decimal)giacenza?.QtaGiacenza;
         }
 
         private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK ordineProduzioneCK)

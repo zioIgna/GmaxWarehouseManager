@@ -87,7 +87,7 @@ namespace Gmax.Models.Services.OrdineCK
         private static void CalculateDisponibilitaGlobale(OrdineProdCompCKListViewModel opc)
         {
             var giacenza = opc.Articolo?.GiacenzaList?.FirstOrDefault();
-            opc.DisponibilitaGlobale = (decimal)giacenza?.QtaGiacenza;
+            opc.DisponibilitaGlobale = giacenza == null ? 0 : giacenza.QtaGiacenza; // (decimal)giacenza?.QtaGiacenza;
         }
 
         private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK ordineProduzioneCK)

@@ -3,11 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Gmax.Models.Entities
 {
-    [Index(nameof(TipoArticolo), nameof(CodiceArticolo), nameof(NroOrdineAcquisto), nameof(DataConsegnaAcquisto), IsUnique = true)]
+    [PrimaryKey(nameof(TipoArticolo), nameof(CodiceArticolo), nameof(NroOrdineAcquisto), nameof(DataConsegnaAcquisto))]
     public class ExpOrdiniAcq
     {
-        public int Id {  get; set; }
-
         [MaxLength(3)]
         [Required]
         public string TipoArticolo { get; set; }
@@ -15,6 +13,7 @@ namespace Gmax.Models.Entities
         [MaxLength(30)]
         [Required]
         public string CodiceArticolo { get; set; }
+        public ArticoloCK Articolo { get; set; }
 
         [Required]
         public int NroOrdineAcquisto { get; set; }

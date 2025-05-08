@@ -66,6 +66,11 @@ namespace Gmax.Data
                 .HasOne(am => am.MagazzinoDestinazione)
                 .WithMany(m => m.AssegnazioneDestinazioneList)
                 .HasForeignKey(am => am.MagazzinoDestinazioneId);
+
+            modelBuilder.Entity<ExpOrdiniAcq>()
+                .HasOne(o => o.Articolo)
+                .WithMany(a => a.OrdiniAcqList)
+                .HasForeignKey(o => new { o.TipoArticolo, o.CodiceArticolo });
         }
     }
 }

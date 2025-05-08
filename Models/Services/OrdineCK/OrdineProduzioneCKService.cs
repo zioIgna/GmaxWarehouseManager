@@ -44,6 +44,9 @@ namespace Gmax.Models.Services.OrdineCK
                 .Include(op => op.OrdineProdCompCKList)
                     .ThenInclude(opc => opc.Articolo)
                         .ThenInclude(a => a.GiacenzaList.Where(g => g.CodMagazzino.Equals("MAG01")))
+                .Include(op => op.OrdineProdCompCKList)
+                    .ThenInclude(opc => opc.Articolo)
+                        .ThenInclude(a => a.OrdiniAcqList)
                 .Include(op => op.ArtLancio)
                 //.Include(op => op.ArtComponenteList)
                 //    .ThenInclude(a => a.OrdineProdCompCKList)
@@ -73,6 +76,7 @@ namespace Gmax.Models.Services.OrdineCK
             {
                 await CalculateFabbisognoGlobale(opc);
                 CalculateDisponibilitaGlobale(opc);
+                CalculateOrdineAcquisto(opc);
             }
 
             return ordineProduzioneCK;
@@ -88,6 +92,15 @@ namespace Gmax.Models.Services.OrdineCK
         {
             var giacenza = opc.Articolo?.GiacenzaList?.FirstOrDefault();
             opc.DisponibilitaGlobale = giacenza == null ? 0 : giacenza.QtaGiacenza; // (decimal)giacenza?.QtaGiacenza;
+        }
+
+        private void CalculateOrdineAcquisto(OrdineProdCompCKListViewModel opc)
+        {
+            var ordineAcq = opc.Articolo?.OrdiniAcqList?.Where(o => o.DataConsegnaAcquisto >= DateTime.Today);
+            if (ordineAcq != null && ordineAcq.Any())
+            {
+                opc.InOrdineAcquisto = ordineAcq.Sum(oa => oa.QtaOrdineFornitore);
+            }
         }
 
         private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK ordineProduzioneCK)

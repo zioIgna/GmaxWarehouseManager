@@ -1,6 +1,7 @@
 using Gmax.Data;
 using Gmax.Extensions;
 using Gmax.Models.Services.ArticoloCK;
+using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IOrdineProduzioneCKService,  OrdineProduzioneCKService>();
 builder.Services.AddTransient<IArticoloCKService, ArticoloCKService>();
 builder.Services.AddTransient<IOrdineProdCompCKService, OrdineProdCompCKService>();
+builder.Services.AddTransient<IGiacenzaService, GiacenzaService>();
 
 var app = builder.Build();
 

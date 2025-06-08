@@ -1,4 +1,5 @@
 ﻿using Gmax.Models.Entities;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Gmax.Models.ViewModels.OrdineProdCompCK
 {
@@ -18,5 +19,6 @@ namespace Gmax.Models.ViewModels.OrdineProdCompCK
         public decimal DisponibilitaGlobale { get; set; }
         public decimal InOrdineAcquisto { get; set; }
         public List<AssegnazioneMagazzino>? Assegnazioni { get; set; }
+        public SelectList? DisponibilitaMagazzini { get; set; }
     }
 }

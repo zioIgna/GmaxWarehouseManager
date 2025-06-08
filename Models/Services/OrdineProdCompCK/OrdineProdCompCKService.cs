@@ -2,6 +2,7 @@
 using Gmax.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
+using System.Linq.Expressions;
 
 namespace Gmax.Models.Services.OrdineProdCompCK
 {
@@ -48,9 +49,20 @@ namespace Gmax.Models.Services.OrdineProdCompCK
         public async Task<IEnumerable<Entities.OrdineProdCompCK>> GetPianificatoOpcListAsync(string tipoArticolo, string codArticolo)
         {
             IQueryable<Entities.OrdineProdCompCK> opcList = GetOpcListByTipoAndCodiceArt(tipoArticolo, codArticolo);
-            IQueryable<Entities.OrdineProdCompCK> filteredList = opcList.Where(opc => opc.OrdineProduzioneCK.Stato.Equals("P"));
+
+            return await FilterListByPredicateAsync(opcList, OrdineProdIsPianificato());
+        }
+
+        private async Task<IEnumerable<T>> FilterListByPredicateAsync<T>(IQueryable<T> collection, Expression<Func<T, bool>> predicate)
+        {
+            var filteredList = collection.Where(predicate);
 
             return await filteredList.ToListAsync();
+        }
+
+        private static Expression<Func<Entities.OrdineProdCompCK, bool>> OrdineProdIsPianificato()
+        {
+            return opc => opc.OrdineProduzioneCK.Stato.Equals("P");
         }
     }
 }

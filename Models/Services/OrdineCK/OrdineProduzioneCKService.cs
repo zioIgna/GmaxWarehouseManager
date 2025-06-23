@@ -2,11 +2,13 @@
 using Gmax.Models.Entities;
 using Gmax.Models.Extensions;
 using Gmax.Models.Services.Giacenza;
+using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineProdCompCK;
 using Gmax.Models.ViewModels.OrdineCK;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Gmax.Models.Services.OrdineCK
 {
@@ -15,12 +17,14 @@ namespace Gmax.Models.Services.OrdineCK
         private readonly GmaxDbContext context;
         private readonly IOrdineProdCompCKService ordineProdCompCKService;
         private readonly IGiacenzaService giacenzaService;
+        private readonly IMagazzinoService magazzinoService;
 
-        public OrdineProduzioneCKService(GmaxDbContext _context, IOrdineProdCompCKService ordineProdCompCKService, IGiacenzaService giacenzaService)
+        public OrdineProduzioneCKService(GmaxDbContext _context, IOrdineProdCompCKService ordineProdCompCKService, IGiacenzaService giacenzaService, IMagazzinoService magazzinoService)
         {
             this.context = _context;
             this.ordineProdCompCKService = ordineProdCompCKService;
             this.giacenzaService = giacenzaService;
+            this.magazzinoService = magazzinoService;
         }
 
         public async Task<ICollection<OrdineProduzioneCK>> GetOrdineProduzioneCKListAsync()
@@ -114,7 +118,9 @@ namespace Gmax.Models.Services.OrdineCK
         private async Task CalculateDisponibilitaMagazzini(OrdineProdCompCKListViewModel opc)
         {
             var giacenzaList = await giacenzaService.GetGiacenzaListByTipoArtCodArtAsync(opc.Articolo.TipoArticolo, opc.Articolo.CodiceArticolo);
-            IEnumerable<Magazzino>? magazzinoList;
+            await CheckForMissingMagazziniAsync(giacenzaList);
+
+            IEnumerable<Entities.Magazzino>? magazzinoList;
             var disponibilitaDict = new Dictionary<string, int>();
             if (giacenzaList.Any())
             {
@@ -122,18 +128,30 @@ namespace Gmax.Models.Services.OrdineCK
                 foreach (var magazzino in magazzinoList)
                 {
                     var relevantAssegnazioneList = opc.Assegnazioni?
-                        .Where(a => 
-                            a.TipoArticolo.Equals(opc.TipoArticolo) && 
+                        .Where(a =>
+                            a.TipoArticolo.Equals(opc.TipoArticolo) &&
                             a.CodiceArticolo.Equals(opc.CodiceArticolo) &&
                             a.DataAssegnazione > magazzino.Giacenza.DataInserimento);
                     int alreadyAssignedQuantity = relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
                     disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.Giacenza.QtaGiacenza - alreadyAssignedQuantity);
                 }
             }
+            if (disponibilitaDict.Count == 0)
+            {
+                disponibilitaDict.Add("---", 0);
+            }
 
             SelectList disponibilitaMagazzini = new SelectList(disponibilitaDict.OrderByDescending(x => x.Key), "Value", "Key");
 
             opc.DisponibilitaMagazzini = disponibilitaMagazzini;
+        }
+
+        private async Task CheckForMissingMagazziniAsync(List<ExpGiacenza> giacenzaList)
+        {
+            foreach (var giacenza in giacenzaList.Where(giacenza => giacenza.Magazzino == null))
+            {
+                giacenza.Magazzino = await magazzinoService.GetMagazzinoByCodeAsync(giacenza.CodMagazzino);
+            }
         }
 
         private async Task<OrdineProduzioneCK> ConditionallyInitializeOPAsync(int nroLancio, int nroSottolancio, OrdineProduzioneCK ordineProduzioneCK)

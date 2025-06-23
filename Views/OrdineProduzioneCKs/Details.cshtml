@@ -103,7 +103,7 @@
     <tbody>
         @foreach(var opc in Model.OrdineProdCompCKList)
         {
-            var ordineProdCompCKVcId = string.Join("_", "opc", opc.TipoArticolo, opc.CodiceArticolo, opc.NroLancio, opc.NroSottolancio);
+            var ordineProdCompCKVcId = string.Join("_", "opc", opc.TipoArticolo.Trim(), opc.CodiceArticolo.Trim(), opc.NroLancio, opc.NroSottolancio);
             <tr id="@ordineProdCompCKVcId">
                 <partial name="/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml" model="@opc"></partial>
             </tr>
@@ -129,3 +129,26 @@
 </table>
 
 <script src="~/js/OrdineProdCompCK/InlineEdit.js"></script>
+
+@* @section Scripts{
+} *@
+<script>
+    // function testFunc(){
+    //     alert("messaggio di test");
+    // }
+</script>
+
+@* @section scripts{
+    <script type="text/javascript">
+        function updateField() {
+            var selectedValue = document.getElementById("disponibilitaSelect").value;
+            document.getElementById("QtaDisponibileOrigine").value = selectedValue;
+        }
+        function updateField(obj) {
+            var refSelectId = obj.getAttribute('data-select-id');
+            var refInputField = obj.getAttribute('data-input-field');
+            var selectedValue = document.getElementById(refSelectId).value;
+            document.getElementById(refSelectId).value = selectedValue;
+        }
+    </script>
+} *@

@@ -21,3 +21,29 @@ async function populatePartialView(event) {
     const opcId = "opc_" + ordineProdCompCKTipoArticolo + "_" + ordineProdCompCKCodArticolo + "_" + ordineProduzioneNroLancio + "_" + ordineProduzioneNroSottolancio;
     document.getElementById(opcId).innerHTML = view;
 }
+
+function updateField(obj) {
+    var refSelectId = obj.getAttribute('data-select-id');
+    var refInputField = obj.getAttribute('data-input-field');
+    var selectedValue = document.getElementById(refSelectId).value;
+    document.getElementById(refInputField).value = selectedValue;
+}
+
+function testFunc() {
+    alert("messaggio di test");
+}
+
+//document.addEventListener("click", testFunc);
+
+//document.addEventListener("DOMContentLoaded", function () {
+//    // Seleziona l'elemento <select> per ID
+//    const selectElement = document.getElementById("disponibilitaSelect");
+//    // Seleziona il campo <input> da aggiornare
+//    const inputField = document.getElementById("QtaDisponibileOrigine");
+
+//    // Aggiunge l'event listener all'elemento <select>
+//    selectElement.addEventListener("change", function () {
+//        // Assegna al campo di input il valore dell'opzione selezionata
+//        inputField.value = this.value;
+//    });
+//});

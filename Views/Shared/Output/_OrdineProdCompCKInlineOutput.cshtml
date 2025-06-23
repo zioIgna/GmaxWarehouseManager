@@ -12,7 +12,13 @@
         }
     }
 
-    var ordineProdCompCKVcId = string.Concat("#", string.Join("_", "opc", Model.TipoArticolo, Model.CodiceArticolo, Model.NroLancio, Model.NroSottolancio));
+    var ordineProdCompCKVcId = string.Concat("#", string.Join("_", "opc", Model.TipoArticolo.Trim(), Model.CodiceArticolo.Trim(), Model.NroLancio, Model.NroSottolancio));
+    string tipoArt_codArt_prefix = string.Join("_", Model.TipoArticolo.Trim(), Model.CodiceArticolo.Trim());
+    var modalName = string.Join("_", tipoArt_codArt_prefix, "Modal");
+    var dataBsTarget = "#" + modalName;
+    var selectId = string.Join("_", tipoArt_codArt_prefix, "DisponibilitaSelect");
+    var qtaDisponibileOrigine = string.Join("_", tipoArt_codArt_prefix, "QtaDispStart");
+    var firstSelectOption = Model.DisponibilitaMagazzini?.FirstOrDefault()?.Value ?? "0";
 }
 <td>@Model.TipoArticolo</td>
 <td>@Model.CodiceArticolo</td>
@@ -37,4 +43,104 @@
     {
         <i class="bi bi-check-circle ms-1" style="color:forestgreen"></i>
     }
+    <!-- Button trigger modal -->
+    <a data-bs-toggle="modal" data-bs-target="@dataBsTarget">
+        <i class="bi bi-arrow-bar-right"></i>
+    </a>
 </td>
+
+
+<!-- Modal -->
+<div class="modal fade" id="@modalName" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Versamento</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row d-flex row-cols-2 mb-1">
+                   <div class="col">
+                        <div class="form-group">
+                            <label for="NroLancio" class="control-label">Lancio</label>
+                            <input id="NroLancio" value="@Model.NroLancio" class="form-control" style="background-color:white" disabled readonly />
+                       </div>
+                   </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="NroSottolancio" class="control-label">Sottolancio</label>
+                            <input id="NroSottolancio" value="@Model.NroSottolancio" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="row d-flex row-cols-3 mb-1">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="TipoArticolo" class="control-label">Tipo Comp.</label>
+                            <input id="TipoArticolo" value="@Model.TipoArticolo" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="CodiceArticolo" class="control-label">Codice Comp.</label>
+                            <input id="CodiceArticolo" value="@Model.CodiceArticolo" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="Descrizione" class="control-label">Descrizione</label>
+                            <input id="Descrizione" value="@descr" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <h5 onclick="testFunc()">Effettua Versamento</h5>
+                <div class="row d-flex row-cols-5 mb-1">
+                    <div class="col">
+                        @* <div class="form-group">
+                            <label for="MagOrigine" class="control-label">Magazzino Origine</label>
+                            <input id="MagOrigine" class="form-control" style="background-color:white" disabled readonly />
+                        </div> *@
+                        <div class="form-group">
+                            <label for="@selectId" class="form-label">Magazzino Origine</label>
+                            <select id="@selectId" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" asp-items="Model.DisponibilitaMagazzini" onchange="updateField(this)"></select> @*  *@
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="@qtaDisponibileOrigine" class="control-label">Qta Disponibile</label>
+                            <input id="@qtaDisponibileOrigine" class="form-control" style="background-color:white" readonly value="@firstSelectOption" /> @* onclick="testFunc()" *@
+                        </div>
+                    </div>
+                    <div class="col">
+                        <i class="bi bi-arrow-right-square"></i>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="MagDestinazione" class="control-label">Magazzino Destinazione</label>
+                            <input id="MagDestinazione" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="QtaDisponibileDestinazione" class="control-label">Qta Disponibile</label>
+                            <input id="QtaDisponibileDestinazione" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="row d-flex row-cols-3 mb-1">
+                    <div class="col">
+                        <div class="form-group">
+                            <label for="QtaVersamento" class="control-label">Quantità Versamento</label>
+                            <input id="QtaVersamento" class="form-control" style="background-color:white" disabled readonly />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>

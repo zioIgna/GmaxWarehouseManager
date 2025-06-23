@@ -2,6 +2,7 @@ using Gmax.Data;
 using Gmax.Extensions;
 using Gmax.Models.Services.ArticoloCK;
 using Gmax.Models.Services.Giacenza;
+using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,7 @@ builder.Services.AddTransient<IOrdineProduzioneCKService,  OrdineProduzioneCKSer
 builder.Services.AddTransient<IArticoloCKService, ArticoloCKService>();
 builder.Services.AddTransient<IOrdineProdCompCKService, OrdineProdCompCKService>();
 builder.Services.AddTransient<IGiacenzaService, GiacenzaService>();
+builder.Services.AddTransient<IMagazzinoService, MagazzinoService>();
 
 var app = builder.Build();
 

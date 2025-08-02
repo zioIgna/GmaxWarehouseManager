@@ -122,6 +122,7 @@ namespace Gmax.Models.Services.OrdineCK
         private async Task CalculateDisponibilitaMagazzini(OrdineProdCompCKListViewModel opc)
         {
             var giacenzaList = await giacenzaService.GetGiacenzaListByTipoArtCodArtAsync(opc.Articolo.TipoArticolo, opc.Articolo.CodiceArticolo);
+            giacenzaList = FilterOutMagazzinoDestinazione(opc, giacenzaList);
             await CheckForMissingMagazziniAsync(giacenzaList);
 
             IEnumerable<Entities.Magazzino>? magazzinoList;
@@ -148,6 +149,12 @@ namespace Gmax.Models.Services.OrdineCK
             SelectList disponibilitaMagazzini = new SelectList(disponibilitaDict.OrderByDescending(x => x.Key), "Value", "Key");
 
             opc.DisponibilitaMagazzini = disponibilitaMagazzini;
+        }
+
+        private List<ExpGiacenza> FilterOutMagazzinoDestinazione(OrdineProdCompCKListViewModel opc, List<ExpGiacenza> giacenzaList)
+        {
+            var filteredList = giacenzaList.Where(g => g.CodMagazzino != opc.MagazzinoDestinazione);
+            return filteredList.ToList();
         }
 
         private async Task CheckForMissingMagazziniAsync(List<ExpGiacenza> giacenzaList)

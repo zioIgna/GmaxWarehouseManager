@@ -16,5 +16,11 @@ namespace Gmax.Models.Services.Magazzino
         {
             return await _context.Magazzino.FirstOrDefaultAsync(m => m.CodMagazzino.Equals(code));
         }
+
+        public async Task<Entities.Magazzino> GetMagazzinoByNLancioAndNSottolancioAsync(int nroLancio, int nroSottolancio)
+        {
+            return await _context.Magazzino
+                .FirstOrDefaultAsync(m => m.NroLancio == nroLancio && m.NroSottolancio == nroSottolancio);
+        }
     }
 }

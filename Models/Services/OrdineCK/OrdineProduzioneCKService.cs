@@ -76,6 +76,10 @@ namespace Gmax.Models.Services.OrdineCK
             }
             ordineProduzioneCK = await ConditionallyInitializeOPAsync(nroLancio, nroSottolancio, ordineProduzioneCK);
             var ordineProduzioneCKDetailViewModel = ordineProduzioneCK.AsDetailViewModel();
+            foreach (var opcDetView in ordineProduzioneCKDetailViewModel.OrdineProdCompCKList)
+            {
+                await ordineProdCompCKService.InitMagDestQtaDisp(opcDetView);
+            }
             ordineProduzioneCKDetailViewModel = await CalculateGlobalValues(ordineProduzioneCKDetailViewModel);
 
             return ordineProduzioneCKDetailViewModel;

@@ -126,6 +126,12 @@ namespace Gmax.Controllers
             //return PartialView("/Views/Shared/Input/_OrdineProdCompCKInlineInput.cshtml", opcInputModel);
         }
 
+        [HttpPost]
+        public void AssegnaValoreAMagazzino()
+        {
+
+        }
+
         #region Metodi da Scaffolding
         // GET: OrdineProduzioneCKs/Create
         public IActionResult Create()

@@ -18,6 +18,9 @@ namespace Gmax.Models.ViewModels.OrdineProdCompCK
         public decimal FabbisognoGlobale { get; set; }
         public decimal DisponibilitaGlobale { get; set; }
         public decimal InOrdineAcquisto { get; set; }
+        public decimal QtaDisponibileMagDestinazione { get; set; }
+        public decimal QtaVersamento {  get; set; }
+        public string MagazzinoDestinazione { get => NroLancio + "-" + NroSottolancio; }
         public List<AssegnazioneMagazzino>? Assegnazioni { get; set; }
         public SelectList? DisponibilitaMagazzini { get; set; }
     }

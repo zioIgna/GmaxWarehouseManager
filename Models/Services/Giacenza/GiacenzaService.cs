@@ -21,5 +21,13 @@ namespace Gmax.Models.Services.Giacenza
 
             return await query.ToListAsync();
         }
+
+        public async Task<ExpGiacenza> GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(string codMag, string tipoArt, string codArt)
+        {
+            return await _context.ExpGiacenze
+                .FirstOrDefaultAsync(g => g.CodMagazzino.Equals(codMag) &&
+                g.TipoArticolo.Equals(tipoArt) &&
+                g.CodiceArticolo.Equals(codArt));
+        }
     }
 }

@@ -290,5 +290,10 @@ namespace Gmax.Models.Services.OrdineCK
 
             return updatedOrdineProdCompCK;
         }
+
+        public async Task<int> CreateAssegnazioneAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

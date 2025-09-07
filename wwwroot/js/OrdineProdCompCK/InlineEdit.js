@@ -20,18 +20,42 @@ async function populatePartialView(event) {
     const ordineProduzioneNroSottolancio = event.target.dataset.nrosottolancio;
     const opcId = "opc_" + ordineProdCompCKTipoArticolo + "_" + ordineProdCompCKCodArticolo + "_" + ordineProduzioneNroLancio + "_" + ordineProduzioneNroSottolancio;
     document.getElementById(opcId).innerHTML = view;
-}
+};
 
-function updateField(obj) {
-    var refSelectId = obj.getAttribute('data-select-id');
-    var refInputField = obj.getAttribute('data-input-field');
-    var selectedValue = document.getElementById(refSelectId).value;
-    document.getElementById(refInputField).value = selectedValue;
-}
+document.addEventListener('DOMContentLoaded', function () {
+    // 1. Recupera gli elementi
+    var magSelect = document.getElementById('magSelect');
+    var codSelectedMag = document.getElementById('codSelectedMag');
+    if (!magSelect || !codSelectedMag) return;
+
+    // 2. Inizializza codSelectedMag con il data-codmag della prima option
+    if (magSelect.options.length > 0) {
+        codSelectedMag.value = magSelect.options[0].dataset.codmag || '';
+    }
+
+    // 3. Aggiorna codSelectedMag ogni volta che cambia la select
+    magSelect.addEventListener('change', function () {
+        var selectedOpt = this.options[this.selectedIndex];
+        codSelectedMag.value = selectedOpt.dataset.codmag || '';
+    });
+});
+
+//function updateField(obj) {
+//    var refSelectId = obj.getAttribute('data-select-id');
+//    var refInputField = obj.getAttribute('data-input-field');
+//    var selectedValue = document.getElementById(refSelectId).value;
+//    document.getElementById(refInputField).value = selectedValue;
+//}
 
 function testFunc() {
     alert("messaggio di test");
 }
+
+//document.getElementById('magSelect')
+//    .addEventListener('change', function () {
+//        var opt = this.options[this.selectedIndex];
+//        document.getElementById('codSelectedMag').value = opt.dataset.codmag;
+//    });
 
 //document.addEventListener("click", testFunc);
 

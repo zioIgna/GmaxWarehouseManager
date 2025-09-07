@@ -6,6 +6,8 @@ using Gmax.Models.Entities;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.ExtensionMethods;
 using Gmax.Models.Extensions;
+using Gmax.Models.ViewModels.OrdineProdCompCK;
+using Gmax.Models.Services.Magazzino;
 
 namespace Gmax.Controllers
 {
@@ -13,11 +15,13 @@ namespace Gmax.Controllers
     {
         private readonly GmaxDbContext _context;
         private readonly IOrdineProduzioneCKService ordineProduzioneCKService;
+        private readonly IMagazzinoService magazzinoService;
 
-        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService)
+        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService)
         {
             _context = context;
             this.ordineProduzioneCKService = ordineProduzioneCKService;
+            this.magazzinoService = magazzinoService;
         }
 
         // GET: OrdineProduzioneCKs
@@ -127,9 +131,30 @@ namespace Gmax.Controllers
         }
 
         [HttpPost]
-        public void AssegnaValoreAMagazzino()
+        public async void AssegnaValoreAMagazzino(OrdineProdCompCKListViewModel model)
         {
+            Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
+            if (magazzinoScelto == null)
+            {
+                throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
+            }
+            Magazzino magazzinoOrigine = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
+            if (magazzinoOrigine == null)
+            {
+                throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoDestinazione);
+            }
 
+            AssegnazioneMagazzino assegnazione = new();
+            assegnazione.NroLancio = model.NroLancio;
+            assegnazione.NroSottolancio = model.NroSottolancio;
+            assegnazione.TipoArticolo = model.TipoArticolo;
+            assegnazione.CodiceArticolo = model.CodiceArticolo;
+            assegnazione.DataAssegnazione = DateTime.Now;
+            assegnazione.Quantita = Decimal.ToInt32(model.QtaVersamento);
+            assegnazione.MagazzinoDestinazioneId = magazzinoScelto.Id;
+            assegnazione.MagazzinoOrigineId = magazzinoOrigine.Id;
+
+            
         }
 
         #region Metodi da Scaffolding

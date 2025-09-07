@@ -25,11 +25,11 @@ builder.Services.AddDbContext<GmaxDbContext>(options =>
 builder.Services.AddRazorPages();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddTransient<IOrdineProduzioneCKService,  OrdineProduzioneCKService>();
-builder.Services.AddTransient<IArticoloCKService, ArticoloCKService>();
-builder.Services.AddTransient<IOrdineProdCompCKService, OrdineProdCompCKService>();
-builder.Services.AddTransient<IGiacenzaService, GiacenzaService>();
-builder.Services.AddTransient<IMagazzinoService, MagazzinoService>();
+builder.Services.AddScoped<IOrdineProduzioneCKService,  OrdineProduzioneCKService>();
+builder.Services.AddScoped<IArticoloCKService, ArticoloCKService>();
+builder.Services.AddScoped<IOrdineProdCompCKService, OrdineProdCompCKService>();
+builder.Services.AddScoped<IGiacenzaService, GiacenzaService>();
+builder.Services.AddScoped<IMagazzinoService, MagazzinoService>();
 
 var app = builder.Build();
 

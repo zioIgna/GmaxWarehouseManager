@@ -23,5 +23,6 @@ namespace Gmax.Models.ViewModels.OrdineProdCompCK
         public string MagazzinoDestinazione { get => NroLancio + "-" + NroSottolancio; }
         public List<AssegnazioneMagazzino>? Assegnazioni { get; set; }
         public SelectList? DisponibilitaMagazzini { get; set; }
+        public string MagazzinoOrigineSelezionato { get; set; }
     }
 }

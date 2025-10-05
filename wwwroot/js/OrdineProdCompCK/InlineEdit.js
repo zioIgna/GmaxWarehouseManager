@@ -22,23 +22,23 @@ async function populatePartialView(event) {
     document.getElementById(opcId).innerHTML = view;
 };
 
-document.addEventListener('DOMContentLoaded', function () {
-    // 1. Recupera gli elementi
-    var magSelect = document.getElementById('magSelect');
-    var codSelectedMag = document.getElementById('codSelectedMag');
-    if (!magSelect || !codSelectedMag) return;
+//document.addEventListener('DOMContentLoaded', function () {
+    //// 1. Recupera gli elementi
+    //var magSelect = document.getElementById('magSelect');
+    //var codSelectedMag = document.getElementById('codSelectedMag');
+    //if (!magSelect || !codSelectedMag) return;
 
-    // 2. Inizializza codSelectedMag con il data-codmag della prima option
-    if (magSelect.options.length > 0) {
-        codSelectedMag.value = magSelect.options[0].dataset.codmag || '';
-    }
+    //// 2. Inizializza codSelectedMag con il data-codmag della prima option
+    //if (magSelect.options.length > 0) {
+    //    codSelectedMag.value = magSelect.options[0].dataset.codmag || '';
+    //}
 
     // 3. Aggiorna codSelectedMag ogni volta che cambia la select
-    magSelect.addEventListener('change', function () {
-        var selectedOpt = this.options[this.selectedIndex];
-        codSelectedMag.value = selectedOpt.dataset.codmag || '';
-    });
-});
+    //magSelect.addEventListener('change', function () {
+    //    var selectedOpt = this.options[this.selectedIndex];
+    //    codSelectedMag.value = selectedOpt.dataset.codmag || '';
+    //})
+//});
 
 //function updateField(obj) {
 //    var refSelectId = obj.getAttribute('data-select-id');

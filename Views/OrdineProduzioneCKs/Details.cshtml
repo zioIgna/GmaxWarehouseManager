@@ -133,10 +133,32 @@
 @* @section Scripts{
 } *@
 <script>
-    // function testFunc(){
-    //     alert("messaggio di test");
-    // }
+    document.addEventListener('DOMContentLoaded', function () {
+        // 1. Recupera gli elementi
+        var magSelect = document.getElementById('magSelect');
+        var codSelectedMag = document.getElementById('codSelectedMag');
+        if (magSelect && codSelectedMag) {
+            // 2. Inizializza codSelectedMag con il data-codmag della prima option
+            if (magSelect.options.length > 0) {
+                codSelectedMag.value = magSelect.options[0].dataset.codmag || '';
+            }
+        }
+    })
+
+    function updateTargetFromSelect(selectEl) {
+      const val = selectEl.value;
+      const targetId = selectEl.getAttribute('data-input-field');
+      if (!targetId) return;
+      const target = document.getElementById(targetId);
+      if (target) target.value = val;
+
+      var codSelectedMag = document.getElementById('codSelectedMag');
+      var selectedOpt = selectEl.options[selectEl.selectedIndex];
+      codSelectedMag.value = selectedOpt.dataset.codmag || '';
+    }
 </script>
+
+
 
 @* @section scripts{
     <script type="text/javascript">

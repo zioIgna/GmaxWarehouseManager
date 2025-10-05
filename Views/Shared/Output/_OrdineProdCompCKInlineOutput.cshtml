@@ -105,7 +105,8 @@
                             </div> *@
                             <div class="form-group">
                                 <label for="@Model.MagazzinoOrigineSelezionato" class="form-label">Magazzino Origine</label>
-                                <select id="magSelect" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateField(this)"> @* asp-items="Model.DisponibilitaMagazzini" *@
+                                <select id="magSelect" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)" >
+                                    @* asp-items="Model.DisponibilitaMagazzini" *@
                                     @foreach(var mag in Model.DisponibilitaMagazzini)
                                     {
                                         <option value="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>

@@ -71,3 +71,11 @@ function testFunc() {
 //        inputField.value = this.value;
 //    });
 //});
+
+//function openModal() {
+//    const modalEl = document.getElementById('magModal');
+//    if (modalEl) {
+//        const bsModal = new bootstrap.Modal(modalEl);
+//        bsModal.show();
+//    }
+//}

@@ -31,129 +31,16 @@
 <td>@Model.DisponibilitaGlobale.ToString("0")</td>
 <td>@Model.InOrdineAcquisto.ToString("0")</td>
 <td>
-    @* <a 
-        asp-action="InlineInput" 
-        asp-route-tipoarticolo="@Model.TipoArticolo" 
-        asp-route-codarticolo="@Model.CodiceArticolo" 
-        asp-route-nrolancio="@Model.NroLancio"
-        asp-route-nrosottolancio="@Model.NroSottolancio"
-        data-ajax="true" data-ajax-mode="replace" data-ajax-update="@ordineProdCompCKVcId">
-        <i class="bi bi-pencil-square"></i>
+    <a 
+       asp-controller="OrdineProduzioneCKs"
+       asp-action="EditModal"
+       asp-route-tipoarticolo="@Model.TipoArticolo"
+       asp-route-codarticolo="@Model.CodiceArticolo"
+       data-ajax="true"
+       data-ajax-mode="replace"
+       data-ajax-update="#modal-container"
+       data-ajax-success="openModal"
+       class="btn btn-primary">
+        Apri Modale
     </a>
-    @if(TempData["ConfirmationMessageInline"] != null)
-    {
-        <i class="bi bi-check-circle ms-1" style="color:forestgreen"></i>
-    } *@
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="@dataBsTarget">
-        <i class="bi bi-arrow-bar-right"></i>
-    </button>
 </td>
-
-
-<!-- Modal -->
-<div class="modal fade" id="@modalName" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Versamento</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="@formId" asp-action="AssegnaValoreAMagazzino" asp-controller="OrdineProduzioneCKs" method="post">
-                    <div class="row d-flex row-cols-2 mb-1">
-                       <div class="col">
-                            <div class="form-group">
-                                <label for="@Model.NroLancio" class="control-label">Lancio</label>
-                                <input asp-for="@Model.NroLancio" class="form-control" style="background-color:white" disabled readonly />
-                           </div>
-                       </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="NroSottolancio" class="control-label">Sottolancio</label>
-                                <input asp-for="@Model.NroSottolancio" class="form-control" style="background-color:white" disabled readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row d-flex row-cols-3 mb-1">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="TipoArticolo" class="control-label">Tipo Comp.</label>
-                                <input asp-for="@Model.TipoArticolo" class="form-control" style="background-color:white" disabled readonly />
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="CodiceArticolo" class="control-label">Codice Comp.</label>
-                                <input asp-for="@Model.CodiceArticolo" class="form-control" style="background-color:white" disabled readonly />
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="Descrizione" class="control-label">Descrizione</label>
-                                <input id="Descrizione" value="@descr" class="form-control" style="background-color:white" disabled readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <hr />
-                    <h5 onclick="testFunc()">Effettua Versamento</h5>
-                    <div class="row d-flex row-cols-5 mb-1">
-                        <div class="col">
-                            @* <div class="form-group">
-                                <label for="MagOrigine" class="control-label">Magazzino Origine</label>
-                                <input id="MagOrigine" class="form-control" style="background-color:white" disabled readonly />
-                            </div> *@
-                            <div class="form-group">
-                                <label for="@Model.MagazzinoOrigineSelezionato" class="form-label">Magazzino Origine</label>
-                                <select id="magSelect" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)" >
-                                    @* asp-items="Model.DisponibilitaMagazzini" *@
-                                    @foreach(var mag in Model.DisponibilitaMagazzini)
-                                    {
-                                        <option value="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
-                                    }
-                                </select> @* asp-for="@Model.MagazzinoOrigineSelezionato" *@
-                            </div>
-                        </div>
-                        <input type="hidden" asp-for="@Model.MagazzinoOrigineSelezionato" id="codSelectedMag" />
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="@qtaDisponibileOrigine" class="control-label">Qta Disponibile</label>
-                                <input id="@qtaDisponibileOrigine" class="form-control" style="background-color:white" readonly value="@firstSelectOption" /> @* onclick="testFunc()" *@
-                            </div>
-                        </div>
-                        <div class="col">
-                            <i class="bi bi-arrow-right-square"></i>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="MagDestinazione" class="control-label">Magazzino Destinazione</label>
-                                <input asp-for="@Model.MagazzinoDestinazione" class="form-control" style="background-color:white" readonly />
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="QtaDisponibileDestinazione" class="control-label">Qta Disponibile</label>
-                                <input asp-for="@Model.QtaDisponibileMagDestinazione" class="form-control" style="background-color:white" disabled readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row d-flex row-cols-3 mb-1">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="QtaVersamento" class="control-label">Quantità Versamento</label>
-                                <input asp-for="@Model.QtaVersamento" class="form-control" style="background-color:white" type="number"
-                                       min="0"
-                                       step="0.01"
-                                       placeholder="0.00" />
-                            </div>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary" form="@formId">Save changes</button>
-            </div>
-        </div>
-    </div>
-</div>

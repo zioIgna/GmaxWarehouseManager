@@ -157,6 +157,18 @@ namespace Gmax.Controllers
             
         }
 
+        public async Task<IActionResult> OpenAssegnazioneModal()
+        {
+            return View();
+        }
+
+        public IActionResult EditModal(string tipoarticolo, string codarticolo)
+        {
+            //var vm = _repo.GetMagazzinoViewModel(id);
+            return PartialView("/Views/Shared/Modal/_TestModal.cshtml");  //, vm
+        }
+
+
         #region Metodi da Scaffolding
         // GET: OrdineProduzioneCKs/Create
         public IActionResult Create()

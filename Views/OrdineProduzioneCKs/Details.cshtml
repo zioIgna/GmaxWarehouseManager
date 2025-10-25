@@ -107,26 +107,11 @@
             <tr id="@ordineProdCompCKVcId">
                 <partial name="/Views/Shared/Output/_OrdineProdCompCKInlineOutput.cshtml" model="@opc"></partial>
             </tr>
-            @*             var descr = string.Empty;
-            if (opc.Articolo != null && !string.IsNullOrWhiteSpace(opc.Articolo?.Descrizione))
-            {
-                descr = opc.Articolo.Descrizione;
-                if(descr.Length > 15)
-                {
-                    descr = descr.Substring(0, 15);
-                }
-            }
-            <tr>
-                <td>@opc.TipoArticolo</td>
-                <td>@opc.CodiceArticolo</td>
-                <td>@descr</td>
-                <td>@opc.Articolo?.UnitaMisuraGestione</td>
-                <td>@opc.Assegnazioni?.FirstOrDefault()?.Quantita</td>
-                <td><i class="bi bi-check-circle"></i></td>
-            </tr> *@
         }
     </tbody>
 </table>
+
+<div id="modal-container"></div>
 
 <script src="~/js/OrdineProdCompCK/InlineEdit.js"></script>
 
@@ -156,21 +141,12 @@
       var selectedOpt = selectEl.options[selectEl.selectedIndex];
       codSelectedMag.value = selectedOpt.dataset.codmag || '';
     }
+
+    function openModal() {
+        const modalEl = document.getElementById('magModal');
+        if (modalEl) {
+            const bsModal = new bootstrap.Modal(modalEl);
+            bsModal.show();
+        }
+    }
 </script>
-
-
-
-@* @section scripts{
-    <script type="text/javascript">
-        function updateField() {
-            var selectedValue = document.getElementById("disponibilitaSelect").value;
-            document.getElementById("QtaDisponibileOrigine").value = selectedValue;
-        }
-        function updateField(obj) {
-            var refSelectId = obj.getAttribute('data-select-id');
-            var refInputField = obj.getAttribute('data-input-field');
-            var selectedValue = document.getElementById(refSelectId).value;
-            document.getElementById(refSelectId).value = selectedValue;
-        }
-    </script>
-} *@

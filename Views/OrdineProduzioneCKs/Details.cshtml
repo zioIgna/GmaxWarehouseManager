@@ -149,4 +149,14 @@
             bsModal.show();
         }
     }
+
+    function onModalSubmitSuccess(response) {
+      if (response.success) {
+        const modalEl = document.getElementById('magModal');
+        const bsModal = bootstrap.Modal.getInstance(modalEl);
+        bsModal.hide();
+        // aggiorna la lista o mostra messaggio
+      }
+    }
+
 </script>

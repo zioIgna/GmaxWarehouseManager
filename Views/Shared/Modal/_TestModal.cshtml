@@ -15,3 +15,30 @@
         </div>
     </div>
 </div>
+
+@* <div class="modal fade" id="magModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form asp-action="Save" method="post" data-ajax="true" data-ajax-method="POST" data-ajax-update="#modal-container" data-ajax-success="onModalSubmitSuccess">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modifica Magazzino</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="Id" />
+                    <div class="mb-3">
+                        <label asp-for="Note" class="form-label"></label>
+                        <input asp-for="Note" class="form-control" />
+                        <span asp-validation-for="Note" class="text-danger"></span>
+                    </div>
+                    @Html.AntiForgeryToken()
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                    <button type="submit" class="btn btn-primary">Salva</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+ *@

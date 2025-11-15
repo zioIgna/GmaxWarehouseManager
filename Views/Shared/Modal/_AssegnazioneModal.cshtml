@@ -1,5 +1,7 @@
-﻿@using Gmax.Models.ViewModels.OrdineProdCompCK
-@model OrdineProdCompCKListViewModel
+﻿@using Gmax.Models.ViewModels.AssegnazioneModal
+@using Gmax.Models.ViewModels.OrdineProdCompCK
+@* @model OrdineProdCompCKListViewModel *@
+@model AssegnazioneModalViewModel
 
 @{
     var descr = string.Empty;
@@ -23,7 +25,7 @@
 }
 
 <!-- Modal -->
-<div class="modal fade" id="assegnazioneModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="magModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
@@ -78,7 +80,7 @@
                                 <label for="@Model.MagazzinoOrigineSelezionato" class="form-label">Magazzino Origine</label>
                                 <select id="magSelect" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)">
                                     @* asp-items="Model.DisponibilitaMagazzini" *@
-                                    @foreach (var mag in Model.DisponibilitaMagazzini)
+                                    @foreach (var mag in Model?.DisponibilitaMagazzini)
                                     {
                                         <option value="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
                                     }

@@ -1,13 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Gmax.Data;
+﻿using Gmax.Data;
 using Gmax.Models.Entities;
-using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.ExtensionMethods;
 using Gmax.Models.Extensions;
-using Gmax.Models.ViewModels.OrdineProdCompCK;
+using Gmax.Models.Services.ArticoloCK;
 using Gmax.Models.Services.Magazzino;
+using Gmax.Models.Services.OrdineCK;
+using Gmax.Models.Services.OrdineProdCompCK;
+using Gmax.Models.ViewModels.AssegnazioneModal;
+using Gmax.Models.ViewModels.OrdineProdCompCK;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Gmax.Controllers
 {
@@ -16,12 +19,16 @@ namespace Gmax.Controllers
         private readonly GmaxDbContext _context;
         private readonly IOrdineProduzioneCKService ordineProduzioneCKService;
         private readonly IMagazzinoService magazzinoService;
+        private readonly IArticoloCKService articoloCKService;
+        private readonly IOrdineProdCompCKService ordineProdCompCKService;
 
-        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService)
+        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService)
         {
             _context = context;
             this.ordineProduzioneCKService = ordineProduzioneCKService;
             this.magazzinoService = magazzinoService;
+            this.articoloCKService = articoloCKService;
+            this.ordineProdCompCKService = ordineProdCompCKService;
         }
 
         // GET: OrdineProduzioneCKs
@@ -162,10 +169,20 @@ namespace Gmax.Controllers
             return View();
         }
 
-        public IActionResult EditModal(string tipoarticolo, string codarticolo)
+        public async Task<IActionResult> EditModalAsync(string nrolancio, string nrosottolancio, string tipoarticolo, string codarticolo)
         {
+            AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
+            assegnazioneModalViewModel.NroLancio = int.Parse(nrolancio);
+            assegnazioneModalViewModel.NroSottolancio = int.Parse(nrosottolancio);
+            assegnazioneModalViewModel.TipoArticolo = tipoarticolo;
+            assegnazioneModalViewModel.CodiceArticolo = codarticolo;
+            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(tipoarticolo, codarticolo);
+            await ordineProduzioneCKService.CalculateDisponibilitaMagazzini(assegnazioneModalViewModel);
+            await ordineProdCompCKService.InitMagDestQtaDisp(assegnazioneModalViewModel);
+
             //var vm = _repo.GetMagazzinoViewModel(id);
-            return PartialView("/Views/Shared/Modal/_TestModal.cshtml");  //, vm
+            //return PartialView("/Views/Shared/Modal/_TestModal.cshtml");  //, vm
+            return PartialView("/Views/Shared/Modal/_AssegnazioneModal.cshtml", assegnazioneModalViewModel);  //, vm
         }
 
 

@@ -34,6 +34,8 @@
     <a 
        asp-controller="OrdineProduzioneCKs"
        asp-action="EditModal"
+       asp-route-nrolancio="@Model.NroLancio"
+       asp-route-nrosottolancio="@Model.NroSottolancio"
        asp-route-tipoarticolo="@Model.TipoArticolo"
        asp-route-codarticolo="@Model.CodiceArticolo"
        data-ajax="true"

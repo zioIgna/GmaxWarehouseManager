@@ -1,9 +1,11 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Extensions;
+using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineProdCompCK;
+using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineCK;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,13 +20,20 @@ namespace Gmax.Models.Services.OrdineCK
         private readonly IOrdineProdCompCKService ordineProdCompCKService;
         private readonly IGiacenzaService giacenzaService;
         private readonly IMagazzinoService magazzinoService;
+        private readonly IAssegnazioneService assegnazioneService;
 
-        public OrdineProduzioneCKService(GmaxDbContext _context, IOrdineProdCompCKService ordineProdCompCKService, IGiacenzaService giacenzaService, IMagazzinoService magazzinoService)
+        public OrdineProduzioneCKService(
+            GmaxDbContext _context,
+            IOrdineProdCompCKService ordineProdCompCKService,
+            IGiacenzaService giacenzaService,
+            IMagazzinoService magazzinoService,
+            IAssegnazioneService assegnazioneService)
         {
             this.context = _context;
             this.ordineProdCompCKService = ordineProdCompCKService;
             this.giacenzaService = giacenzaService;
             this.magazzinoService = magazzinoService;
+            this.assegnazioneService = assegnazioneService;
         }
 
         public async Task<ICollection<OrdineProduzioneCK>> GetOrdineProduzioneCKListAsync()
@@ -92,7 +101,7 @@ namespace Gmax.Models.Services.OrdineCK
                 await CalculateFabbisognoGlobale(opc);
                 CalculateDisponibilitaGlobale(opc);
                 CalculateOrdineAcquisto(opc);
-                await CalculateDisponibilitaMagazzini(opc);
+                //await  CalculateDisponibilitaMagazzini(opc);
             }
 
             return ordineProduzioneCK;
@@ -151,9 +160,49 @@ namespace Gmax.Models.Services.OrdineCK
             opc.DisponibilitaMagazzini = disponibilitaMagazzini;
         }
 
+        public async Task CalculateDisponibilitaMagazzini(AssegnazioneModalViewModel viewModel)
+        {
+            var giacenzaList = await giacenzaService.GetGiacenzaListByTipoArtCodArtAsync(viewModel.TipoArticolo, viewModel.CodiceArticolo);
+            giacenzaList = FilterOutMagazzinoDestinazione(viewModel.MagazzinoDestinazione, giacenzaList);
+            await CheckForMissingMagazziniAsync(giacenzaList);
+
+            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(viewModel.NroLancio, viewModel.NroSottolancio, viewModel.TipoArticolo, viewModel.CodiceArticolo);
+
+            IEnumerable<Entities.Magazzino>? magazzinoList;
+            var disponibilitaDict = new Dictionary<string, int>();
+            if (giacenzaList.Any())
+            {
+                magazzinoList = giacenzaList.Select(g => g.Magazzino).Where(m => m?.TipoMagazzino == Enums.TipoMagazzino.Fisico);
+                foreach (var magazzino in magazzinoList)
+                {
+                    var relevantAssegnazioneList = assegnazioneList?
+                        .Where(a =>
+                            a.TipoArticolo.Equals(viewModel.TipoArticolo) &&
+                            a.CodiceArticolo.Equals(viewModel.CodiceArticolo) &&
+                            a.DataAssegnazione > magazzino.Giacenza.DataInserimento);
+                    int alreadyAssignedQuantity = relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
+                    disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.Giacenza.QtaGiacenza - alreadyAssignedQuantity);
+                }
+            }
+            if (disponibilitaDict.Count == 0)
+            {
+                disponibilitaDict.Add("---", 0);
+            }
+
+            SelectList disponibilitaMagazzini = new SelectList(disponibilitaDict.OrderByDescending(x => x.Key), "Value", "Key");
+
+            viewModel.DisponibilitaMagazzini = disponibilitaMagazzini;
+        }
+
         private List<ExpGiacenza> FilterOutMagazzinoDestinazione(OrdineProdCompCKListViewModel opc, List<ExpGiacenza> giacenzaList)
         {
             var filteredList = giacenzaList.Where(g => g.CodMagazzino != opc.MagazzinoDestinazione);
+            return filteredList.ToList();
+        }
+
+        private List<ExpGiacenza> FilterOutMagazzinoDestinazione(string magazzinoDestinazione, List<ExpGiacenza> giacenzaList)
+        {
+            var filteredList = giacenzaList.Where(g => g.CodMagazzino != magazzinoDestinazione);
             return filteredList.ToList();
         }
 

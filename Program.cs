@@ -1,6 +1,7 @@
 using Gmax.Data;
 using Gmax.Extensions;
 using Gmax.Models.Services.ArticoloCK;
+using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineCK;
@@ -30,6 +31,7 @@ builder.Services.AddScoped<IArticoloCKService, ArticoloCKService>();
 builder.Services.AddScoped<IOrdineProdCompCKService, OrdineProdCompCKService>();
 builder.Services.AddScoped<IGiacenzaService, GiacenzaService>();
 builder.Services.AddScoped<IMagazzinoService, MagazzinoService>();
+builder.Services.AddScoped<IAssegnazioneService,  AssegnazioneService>();
 
 var app = builder.Build();
 

@@ -1,7 +1,9 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
+using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
+using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
 using System.Collections;
@@ -79,7 +81,7 @@ namespace Gmax.Models.Services.OrdineProdCompCK
         //    //ordineProdComp.
         //}
         
-        public async Task InitMagDestQtaDisp(OrdineProdCompCKListViewModel ordineProdComp)
+        public async Task InitMagDestQtaDisp(IEntitaAssegnabile ordineProdComp)
         {
             Entities.Magazzino magazzino = await magazzinoService.GetMagazzinoByNLancioAndNSottolancioAsync(ordineProdComp.NroLancio, ordineProdComp.NroSottolancio);
             ExpGiacenza? expGiacenza = null;

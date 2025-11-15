@@ -1,9 +1,10 @@
 ﻿using Gmax.Models.Entities;
+using Gmax.Models.ViewModels.AssegnazioneModal;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Gmax.Models.ViewModels.OrdineProdCompCK
 {
-    public class OrdineProdCompCKListViewModel
+    public class OrdineProdCompCKListViewModel : IEntitaAssegnabile
     {
         public int NroLancio { get; set; }
         public int NroSottolancio { get; set; }

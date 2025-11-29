@@ -22,5 +22,13 @@ namespace Gmax.Models.Services.Magazzino
             return await _context.Magazzino
                 .FirstOrDefaultAsync(m => m.NroLancio == nroLancio && m.NroSottolancio == nroSottolancio);
         }
+
+        public async Task<Entities.Magazzino> CreateMagazzinoFromNrolancioNrosottolancioAsync(int nroLancio, int nroSottolancio)
+        {
+            Entities.Magazzino magazzino = new Entities.Magazzino(nroLancio, nroSottolancio);
+            _context.Add(magazzino);
+            await _context.SaveChangesAsync();
+            return magazzino;
+        }
     }
 }

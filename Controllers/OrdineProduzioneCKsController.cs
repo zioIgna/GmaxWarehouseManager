@@ -3,11 +3,13 @@ using Gmax.Models.Entities;
 using Gmax.Models.ExtensionMethods;
 using Gmax.Models.Extensions;
 using Gmax.Models.Services.ArticoloCK;
+using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
 using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -21,14 +23,16 @@ namespace Gmax.Controllers
         private readonly IMagazzinoService magazzinoService;
         private readonly IArticoloCKService articoloCKService;
         private readonly IOrdineProdCompCKService ordineProdCompCKService;
+        private readonly IAssegnazioneService assegnazioneService;
 
-        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService)
+        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService, IAssegnazioneService assegnazioneService)
         {
             _context = context;
             this.ordineProduzioneCKService = ordineProduzioneCKService;
             this.magazzinoService = magazzinoService;
             this.articoloCKService = articoloCKService;
             this.ordineProdCompCKService = ordineProdCompCKService;
+            this.assegnazioneService = assegnazioneService;
         }
 
         // GET: OrdineProduzioneCKs
@@ -138,30 +142,25 @@ namespace Gmax.Controllers
         }
 
         [HttpPost]
-        public async void AssegnaValoreAMagazzino(OrdineProdCompCKListViewModel model)
+        public async Task<IActionResult> AssegnaValoreAMagazzino(OrdineProdCompCKListViewModel model)
         {
+            if (model.MagazzinoOrigineSelezionato == null)
+            {
+                throw new ArgumentNullException("Non è stato ricevuto il riferimento del magazzino di origine");
+            }
             Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
             if (magazzinoScelto == null)
             {
                 throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
             }
-            Magazzino magazzinoOrigine = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
-            if (magazzinoOrigine == null)
+            Magazzino magazzinoDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
+            if (magazzinoDestinazione == null)
             {
-                throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoDestinazione);
+                magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
             }
+            await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
 
-            AssegnazioneMagazzino assegnazione = new();
-            assegnazione.NroLancio = model.NroLancio;
-            assegnazione.NroSottolancio = model.NroSottolancio;
-            assegnazione.TipoArticolo = model.TipoArticolo;
-            assegnazione.CodiceArticolo = model.CodiceArticolo;
-            assegnazione.DataAssegnazione = DateTime.Now;
-            assegnazione.Quantita = Decimal.ToInt32(model.QtaVersamento);
-            assegnazione.MagazzinoDestinazioneId = magazzinoScelto.Id;
-            assegnazione.MagazzinoOrigineId = magazzinoOrigine.Id;
-
-            
+            return Ok();
         }
 
         public async Task<IActionResult> OpenAssegnazioneModal()

@@ -7,13 +7,18 @@ namespace Gmax.Models.Entities
     [Index(nameof(NroLancio), nameof(NroSottolancio), IsUnique = true)]
     public class Magazzino
     {
+        public Magazzino(int? nroLancio, int? nroSottolancio)
+        {
+            NroLancio = nroLancio;
+            NroSottolancio = nroSottolancio;
+            _codMagazzino = $"{nroLancio}-{nroSottolancio}";
+        }
+
+
         public int Id { get; set; }
         private string _codMagazzino;
-        public string CodMagazzino 
-        {
-            get => _codMagazzino;
-            set => _codMagazzino = NroLancio.ToString() + "-" + NroSottolancio.ToString();
-        }
+        public string CodMagazzino => _codMagazzino;
+
         [Range(0, 99999999)]
         public int? NroLancio { get; set; }
         [Range(0, 999)]

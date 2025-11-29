@@ -1,4 +1,6 @@
 ﻿using Gmax.Data;
+using Gmax.Models.Entities;
+using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
 
 namespace Gmax.Models.Services.Assegnazione
@@ -20,6 +22,24 @@ namespace Gmax.Models.Services.Assegnazione
                 && a.CodiceArticolo.Equals(codiceArticolo));
 
             return await query.ToListAsync();
+        }
+
+        public async Task<AssegnazioneMagazzino> CreateAssegnazioneMagazzinoFromViewModelAsync(OrdineProdCompCKListViewModel model, int magazzinoSceltoId, int magazzinoDestinazioneId)
+        {
+            AssegnazioneMagazzino assegnazione = new();
+            assegnazione.NroLancio = model.NroLancio;
+            assegnazione.NroSottolancio = model.NroSottolancio;
+            assegnazione.TipoArticolo = model.TipoArticolo;
+            assegnazione.CodiceArticolo = model.CodiceArticolo;
+            assegnazione.DataAssegnazione = DateTime.Now;
+            assegnazione.Quantita = Decimal.ToInt32(model.QtaVersamento);
+            assegnazione.MagazzinoOrigineId = magazzinoSceltoId;
+            assegnazione.MagazzinoDestinazioneId = magazzinoDestinazioneId;
+
+            context.Add(assegnazione);
+            await context.SaveChangesAsync();
+
+            return assegnazione;
         }
     }
 }

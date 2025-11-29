@@ -131,7 +131,8 @@
     })
 
     function updateTargetFromSelect(selectEl) {
-      const val = selectEl.value;
+      // const val = selectEl.value;
+      const val = selectEl.options[selectEl.selectedIndex].dataset.qtamag;
       const targetId = selectEl.getAttribute('data-input-field');
       if (!targetId) return;
       const target = document.getElementById(targetId);

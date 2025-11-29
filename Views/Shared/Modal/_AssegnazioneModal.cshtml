@@ -38,13 +38,13 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="@Model.NroLancio" class="control-label">Lancio</label>
-                                <input asp-for="@Model.NroLancio" class="form-control" style="background-color:white" disabled readonly />
+                                <input asp-for="@Model.NroLancio" class="form-control" style="background-color:white" readonly />
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="NroSottolancio" class="control-label">Sottolancio</label>
-                                <input asp-for="@Model.NroSottolancio" class="form-control" style="background-color:white" disabled readonly />
+                                <input asp-for="@Model.NroSottolancio" class="form-control" style="background-color:white" readonly />
                             </div>
                         </div>
                     </div>
@@ -52,13 +52,13 @@
                         <div class="col">
                             <div class="form-group">
                                 <label for="TipoArticolo" class="control-label">Tipo Comp.</label>
-                                <input asp-for="@Model.TipoArticolo" class="form-control" style="background-color:white" disabled readonly />
+                                <input asp-for="@Model.TipoArticolo" class="form-control" style="background-color:white" readonly />
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
                                 <label for="CodiceArticolo" class="control-label">Codice Comp.</label>
-                                <input asp-for="@Model.CodiceArticolo" class="form-control" style="background-color:white" disabled readonly />
+                                <input asp-for="@Model.CodiceArticolo" class="form-control" style="background-color:white" readonly />
                             </div>
                         </div>
                         <div class="col">
@@ -78,11 +78,11 @@
                             </div> *@
                             <div class="form-group">
                                 <label for="@Model.MagazzinoOrigineSelezionato" class="form-label">Magazzino Origine</label>
-                                <select id="magSelect" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)">
+                                <select id="magSelect" asp-for="@Model.MagazzinoOrigineSelezionato" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)">
                                     @* asp-items="Model.DisponibilitaMagazzini" *@
                                     @foreach (var mag in Model?.DisponibilitaMagazzini)
                                     {
-                                        <option value="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
+                                        <option value="@mag.Text" data-qtamag="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
                                     }
                                 </select> @* asp-for="@Model.MagazzinoOrigineSelezionato" *@
                             </div>

@@ -179,6 +179,12 @@ namespace Gmax.Controllers
             await ordineProduzioneCKService.CalculateDisponibilitaMagazzini(assegnazioneModalViewModel);
             await ordineProdCompCKService.InitMagDestQtaDisp(assegnazioneModalViewModel);
 
+            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = (await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(
+                int.Parse(nrolancio),
+                int.Parse(nrosottolancio),
+                tipoarticolo,
+                codarticolo)).Sum(a => a.Quantita);
+
             //var vm = _repo.GetMagazzinoViewModel(id);
             //return PartialView("/Views/Shared/Modal/_TestModal.cshtml");  //, vm
             return PartialView("/Views/Shared/Modal/_AssegnazioneModal.cshtml", assegnazioneModalViewModel);  //, vm

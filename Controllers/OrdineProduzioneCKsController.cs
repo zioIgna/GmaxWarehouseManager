@@ -144,23 +144,26 @@ namespace Gmax.Controllers
         [HttpPost]
         public async Task<IActionResult> AssegnaValoreAMagazzino(OrdineProdCompCKListViewModel model)
         {
-            if (model.MagazzinoOrigineSelezionato == null)
+            if (ModelState.IsValid)
             {
-                throw new ArgumentNullException("Non è stato ricevuto il riferimento del magazzino di origine");
+                if (model.MagazzinoOrigineSelezionato == null)
+                {
+                    throw new ArgumentNullException("Non è stato ricevuto il riferimento del magazzino di origine");
+                }
+                Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
+                if (magazzinoScelto == null)
+                {
+                    throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
+                }
+                Magazzino magazzinoDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
+                if (magazzinoDestinazione == null)
+                {
+                    magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
+                }
+                await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
             }
-            Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
-            if (magazzinoScelto == null)
-            {
-                throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
-            }
-            Magazzino magazzinoDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
-            if (magazzinoDestinazione == null)
-            {
-                magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
-            }
-            await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
 
-            return Ok();
+            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo);
         }
 
         public async Task<IActionResult> OpenAssegnazioneModal()

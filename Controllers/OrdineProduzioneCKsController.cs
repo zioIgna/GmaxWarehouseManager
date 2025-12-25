@@ -142,7 +142,7 @@ namespace Gmax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssegnaValoreAMagazzino(OrdineProdCompCKListViewModel model)
+        public async Task<IActionResult> AssegnaValoreAMagazzino(AssegnazioneModalViewModel model)
         {
             if (ModelState.IsValid)
             {

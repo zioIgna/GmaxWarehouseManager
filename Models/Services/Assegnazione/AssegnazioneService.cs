@@ -1,5 +1,6 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
+using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,16 @@ namespace Gmax.Models.Services.Assegnazione
             return await query.ToListAsync();
         }
 
-        public async Task<AssegnazioneMagazzino> CreateAssegnazioneMagazzinoFromViewModelAsync(OrdineProdCompCKListViewModel model, int magazzinoSceltoId, int magazzinoDestinazioneId)
+        public async Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByCodartTipoartAsync(string tipoArticolo, string codiceArticolo)
+        {
+            var query = context.AssegnazioniMagazzino.Where(a => 
+                a.TipoArticolo.Equals(tipoArticolo)
+                && a.CodiceArticolo.Equals(codiceArticolo));
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<AssegnazioneMagazzino> CreateAssegnazioneMagazzinoFromViewModelAsync(AssegnazioneModalViewModel model, int magazzinoSceltoId, int magazzinoDestinazioneId)
         {
             AssegnazioneMagazzino assegnazione = new();
             assegnazione.NroLancio = model.NroLancio;

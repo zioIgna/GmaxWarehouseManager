@@ -1,6 +1,7 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Extensions;
+using Gmax.Models.Interfaces;
 using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
@@ -166,7 +167,7 @@ namespace Gmax.Models.Services.OrdineCK
             giacenzaList = FilterOutMagazzinoDestinazione(viewModel.MagazzinoDestinazione, giacenzaList);
             await CheckForMissingMagazziniAsync(giacenzaList);
 
-            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(viewModel.NroLancio, viewModel.NroSottolancio, viewModel.TipoArticolo, viewModel.CodiceArticolo);
+            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByCodartTipoartAsync(viewModel.TipoArticolo, viewModel.CodiceArticolo);
 
             IEnumerable<Entities.Magazzino>? magazzinoList;
             var disponibilitaDict = new Dictionary<string, int>();
@@ -179,6 +180,7 @@ namespace Gmax.Models.Services.OrdineCK
                         .Where(a =>
                             a.TipoArticolo.Equals(viewModel.TipoArticolo) &&
                             a.CodiceArticolo.Equals(viewModel.CodiceArticolo) &&
+                            a.MagazzinoOrigineId.Equals(magazzino.Id) &&
                             a.DataAssegnazione > magazzino.Giacenza.DataInserimento);
                     int alreadyAssignedQuantity = relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
                     disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.Giacenza.QtaGiacenza - alreadyAssignedQuantity);

@@ -146,9 +146,15 @@ namespace Gmax.Models.Services.OrdineCK
                         .Where(a =>
                             a.TipoArticolo.Equals(opc.TipoArticolo) &&
                             a.CodiceArticolo.Equals(opc.CodiceArticolo) &&
-                            a.DataAssegnazione > magazzino.Giacenza.DataInserimento);
+                            a.DataAssegnazione > magazzino.GiacenzaList.FirstOrDefault(
+                                g => g.TipoArticolo.Equals(opc.TipoArticolo) &&
+                                g.CodiceArticolo.Equals(opc.CodiceArticolo))?.DataInserimento);
                     int alreadyAssignedQuantity = relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
-                    disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.Giacenza.QtaGiacenza - alreadyAssignedQuantity);
+                    disponibilitaDict.Add(
+                        magazzino.CodMagazzino,
+                        magazzino.GiacenzaList.First(
+                                g => g.TipoArticolo.Equals(opc.TipoArticolo) &&
+                                g.CodiceArticolo.Equals(opc.CodiceArticolo)).QtaGiacenza - alreadyAssignedQuantity);
                 }
             }
             if (disponibilitaDict.Count == 0)
@@ -181,9 +187,13 @@ namespace Gmax.Models.Services.OrdineCK
                             a.TipoArticolo.Equals(viewModel.TipoArticolo) &&
                             a.CodiceArticolo.Equals(viewModel.CodiceArticolo) &&
                             a.MagazzinoOrigineId.Equals(magazzino.Id) &&
-                            a.DataAssegnazione > magazzino.Giacenza.DataInserimento);
+                            a.DataAssegnazione > magazzino.GiacenzaList.FirstOrDefault(
+                                g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
+                                g.CodiceArticolo.Equals(viewModel.CodiceArticolo))?.DataInserimento);
                     int alreadyAssignedQuantity = relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
-                    disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.Giacenza.QtaGiacenza - alreadyAssignedQuantity);
+                    disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.GiacenzaList.First(
+                                g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
+                                g.CodiceArticolo.Equals(viewModel.CodiceArticolo)).QtaGiacenza - alreadyAssignedQuantity);
                 }
             }
             if (disponibilitaDict.Count == 0)

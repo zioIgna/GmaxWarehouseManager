@@ -15,7 +15,7 @@ namespace Gmax.Models.Services.Magazzino
         public async Task<Entities.Magazzino> GetMagazzinoByCodeAsync(string code)
         {
             return await _context.Magazzino
-                .Include(m => m.Giacenza)
+                .Include(m => m.GiacenzaList)
                 .FirstOrDefaultAsync(m => m.CodMagazzino.Equals(code));
         }
 

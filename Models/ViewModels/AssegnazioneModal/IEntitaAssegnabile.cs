@@ -1,11 +1,9 @@
-﻿namespace Gmax.Models.ViewModels.AssegnazioneModal
+﻿using Gmax.Models.Interfaces;
+
+namespace Gmax.Models.ViewModels.AssegnazioneModal
 {
-    public interface IEntitaAssegnabile
+    public interface IEntitaAssegnabile : ITipoartCodartNrolancioNrosottolancio
     {
-        public int NroLancio { get; set; }
-        public int NroSottolancio { get; set; }
-        public string TipoArticolo { get; set; }
-        public string CodiceArticolo { get; set; }
         public decimal QtaDisponibileMagDestinazione { get; set; }
     }
 }

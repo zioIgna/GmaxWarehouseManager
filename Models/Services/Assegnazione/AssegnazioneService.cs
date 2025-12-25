@@ -51,5 +51,22 @@ namespace Gmax.Models.Services.Assegnazione
 
             return assegnazione;
         }
+
+        public IEnumerable<AssegnazioneMagazzino>? GetRelevantAssegnazioneList(AssegnazioneModalViewModel viewModel, IEnumerable<AssegnazioneMagazzino>? assegnazioneList, Entities.Magazzino magazzino)
+        {
+            return assegnazioneList?
+                                    .Where(a =>
+                                        a.TipoArticolo.Equals(viewModel.TipoArticolo) &&
+                                        a.CodiceArticolo.Equals(viewModel.CodiceArticolo) &&
+                                        a.MagazzinoOrigineId.Equals(magazzino.Id) &&
+                                        a.DataAssegnazione > magazzino.GiacenzaList.FirstOrDefault(
+                                            g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
+                                            g.CodiceArticolo.Equals(viewModel.CodiceArticolo))?.DataInserimento);
+        }
+
+        public int CalculateAlreadyAssignedQuantity(IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList)
+        {
+            return relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
+        }
     }
 }

@@ -6,6 +6,7 @@ using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
+using Gmax.Models.Services.Validazione;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IOrdineProdCompCKService, OrdineProdCompCKService>();
 builder.Services.AddScoped<IGiacenzaService, GiacenzaService>();
 builder.Services.AddScoped<IMagazzinoService, MagazzinoService>();
 builder.Services.AddScoped<IAssegnazioneService,  AssegnazioneService>();
+builder.Services.AddScoped<IAssegnazioneValidator, AssegnazioneValidator>();
 
 var app = builder.Build();
 

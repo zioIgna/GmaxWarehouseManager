@@ -7,12 +7,16 @@ using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
+using Gmax.Models.Services.Validazione;
 using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Gmax.Controllers
 {
@@ -24,8 +28,9 @@ namespace Gmax.Controllers
         private readonly IArticoloCKService articoloCKService;
         private readonly IOrdineProdCompCKService ordineProdCompCKService;
         private readonly IAssegnazioneService assegnazioneService;
+        private readonly IAssegnazioneValidator validator;
 
-        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService, IAssegnazioneService assegnazioneService)
+        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService, IAssegnazioneService assegnazioneService, IAssegnazioneValidator validator)
         {
             _context = context;
             this.ordineProduzioneCKService = ordineProduzioneCKService;
@@ -33,6 +38,7 @@ namespace Gmax.Controllers
             this.articoloCKService = articoloCKService;
             this.ordineProdCompCKService = ordineProdCompCKService;
             this.assegnazioneService = assegnazioneService;
+            this.validator = validator;
         }
 
         // GET: OrdineProduzioneCKs
@@ -142,26 +148,34 @@ namespace Gmax.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AssegnaValoreAMagazzino(AssegnazioneModalViewModel model)
+        public async Task<IActionResult> AssegnaValoreAMagazzino(AssegnazioneModalViewModel model, CancellationToken cancellationToken)
         {
-            if (ModelState.IsValid)
+            var errors = await validator.ValidateAsync(model, cancellationToken);
+            foreach (var (member, message) in errors)
             {
-                if (model.MagazzinoOrigineSelezionato == null)
-                {
-                    throw new ArgumentNullException("Non è stato ricevuto il riferimento del magazzino di origine");
-                }
-                Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
-                if (magazzinoScelto == null)
-                {
-                    throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
-                }
-                Magazzino magazzinoDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
-                if (magazzinoDestinazione == null)
-                {
-                    magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
-                }
-                await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
+                ModelState.AddModelError(member, message);
             }
+
+            if (!ModelState.IsValid)
+            {
+                return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo);
+            }
+
+            if (model.MagazzinoOrigineSelezionato == null)
+            {
+                throw new ArgumentNullException("Non è stato ricevuto il riferimento del magazzino di origine");
+            }
+            Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
+            if (magazzinoScelto == null)
+            {
+                throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
+            }
+            Magazzino magazzinoDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
+            if (magazzinoDestinazione == null)
+            {
+                magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
+            }
+            await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
 
             return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo);
         }

@@ -146,18 +146,16 @@
     function openModal() {
         const modalEl = document.getElementById('magModal');
         if (modalEl) {
+            // Reset dropdown alla prima option
+            const magSelect = document.getElementById('magSelect');
+            if (magSelect) {
+                magSelect.selectedIndex = 0;
+                updateTargetFromSelect(magSelect);
+            }
+
             const bsModal = new bootstrap.Modal(modalEl);
             bsModal.show();
         }
-    }
-
-    function onModalSubmitSuccess(response) {
-      if (response.success) {
-        const modalEl = document.getElementById('magModal');
-        const bsModal = bootstrap.Modal.getInstance(modalEl);
-        bsModal.hide();
-        // aggiorna la lista o mostra messaggio
-      }
     }
 
 </script>

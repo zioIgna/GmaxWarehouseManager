@@ -29,7 +29,7 @@ namespace Gmax.Models.Services.Validazione
 
             if (model.MagazzinoOrigineSelezionato.Equals("---"))
             {
-                errors.Add((nameof(model.MagazzinoOrigineSelezionato), "Non sono disponibili magazzini per questo articolo."));
+                errors.Add((nameof(model.MagazzinoOrigineSelezionato), "Nessun magazzino dispone di questo articolo."));
                 return errors;
             }
 

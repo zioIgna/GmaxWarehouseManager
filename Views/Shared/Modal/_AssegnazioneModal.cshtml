@@ -89,6 +89,7 @@
                                         <option value="@mag.Text" data-qtamag="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
                                     }
                                 </select> @* asp-for="@Model.MagazzinoOrigineSelezionato" *@
+                                <span asp-validation-for="MagazzinoOrigineSelezionato" class="text-danger"></span>
                             </div>
                         </div>
                         <input type="hidden" asp-for="@Model.MagazzinoOrigineSelezionato" id="codSelectedMag" />

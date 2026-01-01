@@ -26,7 +26,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="magModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Versamento</h1>
@@ -74,43 +74,38 @@
                     </div>
                     <hr />
                     <h5 onclick="testFunc()">Effettua Versamento</h5>
-                    <div class="row d-flex row-cols-5 mb-1">
+                    <div class="row mb-3">
                         <div class="col">
-                            @* <div class="form-group">
-                                <label for="MagOrigine" class="control-label">Magazzino Origine</label>
-                                <input id="MagOrigine" class="form-control" style="background-color:white" disabled readonly />
-                            </div> *@
                             <div class="form-group">
                                 <label for="@Model.MagazzinoOrigineSelezionato" class="form-label">Magazzino Origine</label>
                                 <select id="magSelect" asp-for="@Model.MagazzinoOrigineSelezionato" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)">
-                                    @* asp-items="Model.DisponibilitaMagazzini" *@
                                     @foreach (var mag in Model?.DisponibilitaMagazzini)
                                     {
                                         <option value="@mag.Text" data-qtamag="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
                                     }
-                                </select> @* asp-for="@Model.MagazzinoOrigineSelezionato" *@
+                                </select>
                                 <span asp-validation-for="MagazzinoOrigineSelezionato" class="text-danger"></span>
                             </div>
                         </div>
                         <input type="hidden" asp-for="@Model.MagazzinoOrigineSelezionato" id="codSelectedMag" />
                         <div class="col">
                             <div class="form-group">
-                                <label for="@qtaDisponibileOrigine" class="control-label">Qta Disponibile</label>
+                                <label for="@qtaDisponibileOrigine" class="form-label">Qta Disponibile</label>
                                 <input id="@qtaDisponibileOrigine" class="form-control" style="background-color:white" readonly value="@firstSelectOption" /> @* onclick="testFunc()" *@
                             </div>
                         </div>
-                        <div class="col">
-                            <i class="bi bi-arrow-right-square"></i>
+                        <div class="col col-auto d-flex align-items-center justify-content-center">
+                            <i class="bi bi-arrow-right-square" style="font-size:64px; line-height:1;"></i>
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="MagDestinazione" class="control-label">Magazzino Destinazione</label>
+                                <label for="MagDestinazione" class="form-label">Magazzino Destinazione</label>
                                 <input asp-for="@Model.MagazzinoDestinazione" class="form-control" style="background-color:white" readonly />
                             </div>
                         </div>
                         <div class="col">
                             <div class="form-group">
-                                <label for="QtaDisponibileDestinazione" class="control-label">Qta Disponibile</label>
+                                <label for="QtaDisponibileDestinazione" class="form-label">Qta Disponibile</label>
                                 <input asp-for="@Model.QtaDisponibileMagDestinazione" class="form-control" style="background-color:white" disabled readonly />
                             </div>
                         </div>
@@ -118,7 +113,7 @@
                     <div class="row d-flex row-cols-3 mb-1">
                         <div class="col">
                             <div class="form-group">
-                                <label for="QtaVersamento" class="control-label">Quantità Versamento</label>
+                                <label for="QtaVersamento" class="form-label">Quantità Versamento</label>
                                 <input asp-for="@Model.QtaVersamento" class="form-control" style="background-color:white" type="number"
                                        min="0"
                                        placeholder="0.00"

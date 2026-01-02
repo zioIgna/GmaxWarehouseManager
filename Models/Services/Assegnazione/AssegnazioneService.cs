@@ -75,5 +75,15 @@ namespace Gmax.Models.Services.Assegnazione
 
             return await query;
         }
+
+        public async Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByMagoriginidTipoartCodart(int magId, string tipoArticolo, string codiceArticolo)
+        {
+            var query = context.AssegnazioniMagazzino.
+                Where(a => a.MagazzinoOrigineId == magId
+                && a.TipoArticolo.Equals(tipoArticolo)
+                && a.CodiceArticolo.Equals(codiceArticolo));
+
+            return await query.ToListAsync();
+        }
     }
 }

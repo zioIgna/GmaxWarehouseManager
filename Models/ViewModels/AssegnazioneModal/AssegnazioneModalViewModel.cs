@@ -11,10 +11,15 @@ namespace Gmax.Models.ViewModels.AssegnazioneModal
         public Entities.ArticoloCK? Articolo { get; set; }
         public SelectList? DisponibilitaMagazzini { get; set; }
         public string MagazzinoOrigineSelezionato { get; set; }
-        public string MagazzinoDestinazione { get => NroLancio + "-" + NroSottolancio; }
+        public string MagazzinoDestinazione { get; set; }
         public decimal QtaDisponibileMagDestinazione { get; set; }
         public decimal QtaVersamento { get; set; }
         public int PreviousAssegnazione { get; set; }
         public bool IsRevertOperation { get; set; } = false;
+
+        public void SetDefaultMagDestCode()
+        {
+            MagazzinoDestinazione = this.NroLancio + "-" + this.NroSottolancio;
+        }
     }
 }

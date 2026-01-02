@@ -1,4 +1,5 @@
 ﻿
+using Gmax.Models.Interfaces;
 using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 
@@ -11,5 +12,7 @@ namespace Gmax.Models.Services.OrdineProdCompCK
         Task<IEnumerable<Entities.OrdineProdCompCK>> GetPianificatoOpcListAsync(string tipoArticolo, string codArticolo);
         //Task InitMagDestQtaDisp(Entities.OrdineProdCompCK ordineProdComp);
         Task InitMagDestQtaDisp(IEntitaAssegnabile ordineProdComp);
+        Task<int> GetQtaDispDaGiacenza(ITipoartCodartNrolancioNrosottolancio entita);
+        Task<int> GetQtaDispDaGiacenza(int magId, string tipoArt, string codArt);
     }
 }

@@ -32,5 +32,10 @@ namespace Gmax.Models.Services.Magazzino
             await _context.SaveChangesAsync();
             return magazzino;
         }
+
+        public async Task<Entities.Magazzino> GetMagazzinoByIdAsync(int id)
+        {
+            return await _context.Magazzino.FirstOrDefaultAsync(m => m.Id == id);
+        }
     }
 }

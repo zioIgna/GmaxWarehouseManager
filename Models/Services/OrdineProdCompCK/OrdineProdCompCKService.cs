@@ -1,5 +1,6 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
+using Gmax.Models.Interfaces;
 using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
@@ -90,6 +91,28 @@ namespace Gmax.Models.Services.OrdineProdCompCK
                 expGiacenza = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, ordineProdComp.TipoArticolo, ordineProdComp.CodiceArticolo);
             }
             ordineProdComp.QtaDisponibileMagDestinazione = expGiacenza != null ? expGiacenza.QtaGiacenza : 0;
+        }
+
+        public async Task<int> GetQtaDispDaGiacenza(ITipoartCodartNrolancioNrosottolancio entita)
+        {
+            Entities.Magazzino magazzino = await magazzinoService.GetMagazzinoByNLancioAndNSottolancioAsync(entita.NroLancio, entita.NroSottolancio);
+            ExpGiacenza? expGiacenza = null;
+            if (magazzino != null)
+            {
+                expGiacenza = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, entita.TipoArticolo, entita.CodiceArticolo);
+            }
+            return expGiacenza != null ? expGiacenza.QtaGiacenza : 0;
+        }
+
+        public async Task<int> GetQtaDispDaGiacenza(int magId, string tipoArt, string codArt)
+        {
+            Entities.Magazzino magazzino = await magazzinoService.GetMagazzinoByIdAsync(magId);
+            ExpGiacenza? expGiacenza = null;
+            if (magazzino != null)
+            {
+                expGiacenza = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, tipoArt, codArt);
+            }
+            return expGiacenza != null ? expGiacenza.QtaGiacenza : 0;
         }
     }
 }

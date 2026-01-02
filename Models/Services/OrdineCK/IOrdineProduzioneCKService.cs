@@ -13,5 +13,7 @@ namespace Gmax.Models.Services.OrdineCK
         Task<OrdineProduzioneCKDetailViewModel> GetOrdineProduzioneCKDetailViewModelAsync(int nroLancio, int nroSottolancio);
         Task<Entities.OrdineProdCompCK> AddAssegnazioneMagazzinoToOrdineProdCompAsync(OrdineProdCompCKInlineInputViewModel opcInputModel);
         Task CalculateDisponibilitaMagazzini(AssegnazioneModalViewModel viewModel);
+        void SetDisponibilitaMagByDictionary(Dictionary<string, int> dict, AssegnazioneModalViewModel viewModel);
+        Task<int> CalculateDisponibilitaMagFromAssegnazioniAsync(int nroLancio, int nroSottolancio, string tipoArt, string codArt);
     }
 }

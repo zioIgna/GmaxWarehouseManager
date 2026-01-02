@@ -194,9 +194,19 @@ namespace Gmax.Models.Services.OrdineCK
                 disponibilitaDict.Add("---", 0);
             }
 
-            SelectList disponibilitaMagazzini = new SelectList(disponibilitaDict.OrderByDescending(x => x.Key), "Value", "Key");
+            SetDisponibilitaMagByDictionary(disponibilitaDict, viewModel);
+        }
 
+        public void SetDisponibilitaMagByDictionary(Dictionary<string, int> dict, AssegnazioneModalViewModel viewModel)
+        {
+            SelectList disponibilitaMagazzini = new SelectList(dict.OrderByDescending(x => x.Key), "Value", "Key");
             viewModel.DisponibilitaMagazzini = disponibilitaMagazzini;
+        }
+
+        public async Task<int> CalculateDisponibilitaMagFromAssegnazioniAsync(int nroLancio, int nroSottolancio, string tipoArt, string codArt)
+        {
+            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(nroLancio, nroSottolancio, tipoArt, codArt);
+            return (int)assegnazioneList?.Sum(a => a.Quantita);
         }
 
         private List<ExpGiacenza> FilterOutMagazzinoDestinazione(OrdineProdCompCKListViewModel opc, List<ExpGiacenza> giacenzaList)

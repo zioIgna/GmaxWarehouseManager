@@ -4,6 +4,7 @@ using Gmax.Models.ExtensionMethods;
 using Gmax.Models.Extensions;
 using Gmax.Models.Services.ArticoloCK;
 using Gmax.Models.Services.Assegnazione;
+using Gmax.Models.Services.Giacenza;
 using Gmax.Models.Services.Magazzino;
 using Gmax.Models.Services.OrdineCK;
 using Gmax.Models.Services.OrdineProdCompCK;
@@ -16,6 +17,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Threading;
+using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Gmax.Controllers
@@ -29,8 +31,9 @@ namespace Gmax.Controllers
         private readonly IOrdineProdCompCKService ordineProdCompCKService;
         private readonly IAssegnazioneService assegnazioneService;
         private readonly IAssegnazioneValidator validator;
+        private readonly IGiacenzaService giacenzaSevice;
 
-        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService, IAssegnazioneService assegnazioneService, IAssegnazioneValidator validator)
+        public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService, IAssegnazioneService assegnazioneService, IAssegnazioneValidator validator, IGiacenzaService giacenzaSevice)
         {
             _context = context;
             this.ordineProduzioneCKService = ordineProduzioneCKService;
@@ -39,6 +42,7 @@ namespace Gmax.Controllers
             this.ordineProdCompCKService = ordineProdCompCKService;
             this.assegnazioneService = assegnazioneService;
             this.validator = validator;
+            this.giacenzaSevice = giacenzaSevice;
         }
 
         // GET: OrdineProduzioneCKs
@@ -189,35 +193,38 @@ namespace Gmax.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditModalAsync(string nrolancio, string nrosottolancio, string tipoarticolo, string codarticolo, int prevAssegnazioneId)
+        public async Task<IActionResult> EditModalAsync(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId)
         {
             AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
-            assegnazioneModalViewModel.NroLancio = int.Parse(nrolancio);
-            assegnazioneModalViewModel.NroSottolancio = int.Parse(nrosottolancio);
-            assegnazioneModalViewModel.TipoArticolo = tipoarticolo;
-            assegnazioneModalViewModel.CodiceArticolo = codarticolo;
-            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(tipoarticolo, codarticolo);
+            assegnazioneModalViewModel.NroLancio = int.Parse(nroLancio);
+            assegnazioneModalViewModel.NroSottolancio = int.Parse(nroSottolancio);
+            assegnazioneModalViewModel.TipoArticolo = tipoArticolo;
+            assegnazioneModalViewModel.CodiceArticolo = codArticolo;
+            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(tipoArticolo, codArticolo);
             await ordineProduzioneCKService.CalculateDisponibilitaMagazzini(assegnazioneModalViewModel);
-            await ordineProdCompCKService.InitMagDestQtaDisp(assegnazioneModalViewModel);
+
+            assegnazioneModalViewModel.SetDefaultMagDestCode();
 
             assegnazioneModalViewModel.QtaDisponibileMagDestinazione = (await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(
-                int.Parse(nrolancio),
-                int.Parse(nrosottolancio),
-                tipoarticolo,
-                codarticolo)).Sum(a => a.Quantita);
+                int.Parse(nroLancio),
+                int.Parse(nroSottolancio),
+                tipoArticolo,
+                codArticolo)).Sum(a => a.Quantita);
 
             assegnazioneModalViewModel.PreviousAssegnazione = prevAssegnazioneId;
             ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
 
-            //var vm = _repo.GetMagazzinoViewModel(id);
-            //return PartialView("/Views/Shared/Modal/_TestModal.cshtml");  //, vm
-            return PartialView("/Views/Shared/Modal/_AssegnazioneModal.cshtml", assegnazioneModalViewModel);  //, vm
+            return PartialView("/Views/Shared/Modal/_AssegnazioneModal.cshtml", assegnazioneModalViewModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> InvertiVersamento(string assegnazioneId)
+        public async Task<IActionResult> InvertiVersamento(int assegnazioneId)
         {
-            AssegnazioneMagazzino assegnazione = await assegnazioneService.GetAssegnazioneMagazzinoByIdAsync(int.Parse(assegnazioneId));
+            AssegnazioneMagazzino assegnazione = await assegnazioneService.GetAssegnazioneMagazzinoByIdAsync(assegnazioneId);
+            if (assegnazione == null)
+            {
+                throw new Exception("Non è stato possibile recuperare i valori dell'assegnazione con Id: " + assegnazioneId);
+            }
 
             AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
             assegnazioneModalViewModel.NroLancio = assegnazione.NroLancio;
@@ -225,18 +232,48 @@ namespace Gmax.Controllers
             assegnazioneModalViewModel.TipoArticolo = assegnazione.TipoArticolo;
             assegnazioneModalViewModel.CodiceArticolo = assegnazione.CodiceArticolo;
             assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
-            await ordineProduzioneCKService.CalculateDisponibilitaMagazzini(assegnazioneModalViewModel);
-            await ordineProdCompCKService.InitMagDestQtaDisp(assegnazioneModalViewModel);
+            
+            int disponibilitaNewMagOrigine = await ordineProduzioneCKService.CalculateDisponibilitaMagFromAssegnazioniAsync(assegnazione.NroLancio, assegnazione.NroSottolancio, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
+            Magazzino newMagOrigine = await magazzinoService.GetMagazzinoByNLancioAndNSottolancioAsync(assegnazione.NroLancio, assegnazione.NroSottolancio);
+            if (newMagOrigine == null)
+            {
+                throw new Exception($"Non è stato possibile recuperare il magazzino con nroLancio {assegnazione.NroLancio} e nroSottolancio {assegnazione.NroSottolancio}");
+            }
+            Dictionary<string, int> dict = new Dictionary<string, int>();
+            dict.Add(newMagOrigine.CodMagazzino, disponibilitaNewMagOrigine);
+            ordineProduzioneCKService.SetDisponibilitaMagByDictionary(dict, assegnazioneModalViewModel);
 
-            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = (await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(
-                assegnazione.NroLancio,
-                assegnazione.NroSottolancio,
-                assegnazione.TipoArticolo,
-                assegnazione.CodiceArticolo)).Sum(a => a.Quantita);
+            Magazzino newMagDestinazione = await magazzinoService.GetMagazzinoByIdAsync(assegnazione.MagazzinoOrigineId);
+            if (newMagDestinazione == null)
+            {
+                throw new Exception("Non è stato trovato il magazzino di origine del versamento con Id: " + assegnazione.MagazzinoOrigineId);
+            }
+            assegnazioneModalViewModel.MagazzinoDestinazione = newMagDestinazione.CodMagazzino;
+            int disponibilitaNewMagDestDaGiacenza = await ordineProdCompCKService.GetQtaDispDaGiacenza(assegnazione.MagazzinoOrigineId, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
+            IEnumerable<AssegnazioneMagazzino> assegnazioneList = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(assegnazione.MagazzinoOrigineId, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
+            if (assegnazioneList.Any())
+            {
+                assegnazioneList = await FilterOutOldAssegnazioniAsync(assegnazioneList, assegnazione.MagazzinoOrigineId);
+            }
+            int qtaGiaAssegnata = assegnazioneList.Sum(a => a.Quantita);
+            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = disponibilitaNewMagDestDaGiacenza - qtaGiaAssegnata;
+
+            assegnazioneModalViewModel.QtaVersamento = (decimal)assegnazione.Quantita;
 
             assegnazioneModalViewModel.PreviousAssegnazione = 0;
             ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
             return PartialView("/Views/Shared/Modal/_ValorizzazioneRevert.cshtml", assegnazioneModalViewModel);
+        }
+
+        private async Task<IEnumerable<AssegnazioneMagazzino>> FilterOutOldAssegnazioniAsync(IEnumerable<AssegnazioneMagazzino> assegnazioneList, int magazzinoId)
+        {
+            Magazzino magazzino = await magazzinoService.GetMagazzinoByIdAsync(magazzinoId);
+            if (magazzino == null)
+            {
+                throw new Exception("Non è stato possibile recuperare il magazzino con id: " + magazzinoId);
+            }
+            ExpGiacenza giacenza = await giacenzaSevice.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, assegnazioneList.First().TipoArticolo, assegnazioneList.First().CodiceArticolo);
+            return assegnazioneList.Where(a => a.DataAssegnazione > giacenza.DataInserimento);
         }
 
 

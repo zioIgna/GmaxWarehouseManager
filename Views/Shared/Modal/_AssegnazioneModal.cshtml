@@ -74,53 +74,8 @@
                     </div>
                     <hr />
                     <h5>Effettua Versamento</h5>
-                    <div class="row mb-3">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="@Model.MagazzinoOrigineSelezionato" class="form-label">Magazzino Origine</label>
-                                <select id="magSelect" asp-for="@Model.MagazzinoOrigineSelezionato" class="form-select" data-select-id="@selectId" data-input-field="@qtaDisponibileOrigine" onchange="updateTargetFromSelect(this)">
-                                    @foreach (var mag in Model?.DisponibilitaMagazzini)
-                                    {
-                                        <option value="@mag.Text" data-qtamag="@mag.Value" data-codmag="@mag.Text">@mag.Text</option>
-                                    }
-                                </select>
-                                <span asp-validation-for="MagazzinoOrigineSelezionato" class="text-danger"></span>
-                            </div>
-                        </div>
-                        <input type="hidden" asp-for="@Model.MagazzinoOrigineSelezionato" id="codSelectedMag" />
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="@qtaDisponibileOrigine" class="form-label">Qta Disponibile</label>
-                                <input id="@qtaDisponibileOrigine" class="form-control" style="background-color:white" readonly value="@firstSelectOption" />
-                            </div>
-                        </div>
-                        <div class="col col-auto d-flex align-items-center justify-content-center">
-                            <i class="bi bi-arrow-right-square" style="font-size:64px; line-height:1;"></i>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="MagDestinazione" class="form-label">Magazzino Destinazione</label>
-                                <input asp-for="@Model.MagazzinoDestinazione" class="form-control" style="background-color:white" readonly />
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="QtaDisponibileDestinazione" class="form-label">Qta Disponibile</label>
-                                <input asp-for="@Model.QtaDisponibileMagDestinazione" class="form-control" style="background-color:white" disabled readonly />
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row d-flex row-cols-3 mb-1">
-                        <div class="col">
-                            <div class="form-group">
-                                <label for="QtaVersamento" class="form-label">Quantità Versamento</label>
-                                <input asp-for="@Model.QtaVersamento" class="form-control" style="background-color:white" type="number"
-                                       min="0"
-                                       placeholder="0.00"
-                                       value="0"/>
-                                <span asp-validation-for="QtaVersamento" class="text-danger"></span>
-                            </div>
-                        </div>
+                    <div id="versamento-section">
+                        <partial name="/Views/Shared/Modal/_ValorizzazioneStraight.cshtml" model="@Model"></partial>
                     </div>
                 </form>
             </div>

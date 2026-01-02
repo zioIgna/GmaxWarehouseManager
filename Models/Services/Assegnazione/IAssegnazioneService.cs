@@ -12,5 +12,6 @@ namespace Gmax.Models.Services.Assegnazione
         Task<AssegnazioneMagazzino> CreateAssegnazioneMagazzinoFromViewModelAsync(AssegnazioneModalViewModel model, int magazzinoSceltoId, int magazzinoDestinazioneId);
         IEnumerable<AssegnazioneMagazzino>? GetRelevantAssegnazioneList(AssegnazioneModalViewModel viewModel, IEnumerable<AssegnazioneMagazzino>? assegnazioneList, Entities.Magazzino magazzino);
         int CalculateAlreadyAssignedQuantity(IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList);
+        Task<AssegnazioneMagazzino?> GetAssegnazioneMagazzinoByIdAsync(int assegnazioneId);
     }
 }

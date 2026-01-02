@@ -158,7 +158,7 @@ namespace Gmax.Controllers
 
             if (!ModelState.IsValid)
             {
-                return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo);
+                return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, 0);
             }
 
             if (model.MagazzinoOrigineSelezionato == null)
@@ -175,9 +175,13 @@ namespace Gmax.Controllers
             {
                 magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
             }
-            await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
+            AssegnazioneMagazzino assegnazioneMag = await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
+            if (assegnazioneMag == null)
+            {
+                throw new DbUpdateException("Il versamento non è andato a buon fine.");
+            }
 
-            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo);
+            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, assegnazioneMag.Id);
         }
 
         public async Task<IActionResult> OpenAssegnazioneModal()
@@ -185,7 +189,7 @@ namespace Gmax.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditModalAsync(string nrolancio, string nrosottolancio, string tipoarticolo, string codarticolo)
+        public async Task<IActionResult> EditModalAsync(string nrolancio, string nrosottolancio, string tipoarticolo, string codarticolo, int prevAssegnazioneId)
         {
             AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
             assegnazioneModalViewModel.NroLancio = int.Parse(nrolancio);
@@ -202,9 +206,37 @@ namespace Gmax.Controllers
                 tipoarticolo,
                 codarticolo)).Sum(a => a.Quantita);
 
+            assegnazioneModalViewModel.PreviousAssegnazione = prevAssegnazioneId;
+            ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
+
             //var vm = _repo.GetMagazzinoViewModel(id);
             //return PartialView("/Views/Shared/Modal/_TestModal.cshtml");  //, vm
             return PartialView("/Views/Shared/Modal/_AssegnazioneModal.cshtml", assegnazioneModalViewModel);  //, vm
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> InvertiVersamento(string assegnazioneId)
+        {
+            AssegnazioneMagazzino assegnazione = await assegnazioneService.GetAssegnazioneMagazzinoByIdAsync(int.Parse(assegnazioneId));
+
+            AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
+            assegnazioneModalViewModel.NroLancio = assegnazione.NroLancio;
+            assegnazioneModalViewModel.NroSottolancio = assegnazione.NroSottolancio;
+            assegnazioneModalViewModel.TipoArticolo = assegnazione.TipoArticolo;
+            assegnazioneModalViewModel.CodiceArticolo = assegnazione.CodiceArticolo;
+            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
+            await ordineProduzioneCKService.CalculateDisponibilitaMagazzini(assegnazioneModalViewModel);
+            await ordineProdCompCKService.InitMagDestQtaDisp(assegnazioneModalViewModel);
+
+            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = (await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(
+                assegnazione.NroLancio,
+                assegnazione.NroSottolancio,
+                assegnazione.TipoArticolo,
+                assegnazione.CodiceArticolo)).Sum(a => a.Quantita);
+
+            assegnazioneModalViewModel.PreviousAssegnazione = 0;
+            ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
+            return PartialView("/Views/Shared/Modal/_ValorizzazioneRevert.cshtml", assegnazioneModalViewModel);
         }
 
 

@@ -68,5 +68,12 @@ namespace Gmax.Models.Services.Assegnazione
         {
             return relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
         }
+
+        public async Task<AssegnazioneMagazzino?> GetAssegnazioneMagazzinoByIdAsync(int assegnazioneId)
+        {
+            var query = context.AssegnazioniMagazzino.FirstOrDefaultAsync(a => a.Id == assegnazioneId);
+
+            return await query;
+        }
     }
 }

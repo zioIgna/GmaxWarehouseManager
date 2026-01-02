@@ -14,5 +14,7 @@ namespace Gmax.Models.ViewModels.AssegnazioneModal
         public string MagazzinoDestinazione { get => NroLancio + "-" + NroSottolancio; }
         public decimal QtaDisponibileMagDestinazione { get; set; }
         public decimal QtaVersamento { get; set; }
+        public int PreviousAssegnazione { get; set; }
+        public bool IsRevertOperation { get; set; } = false;
     }
 }

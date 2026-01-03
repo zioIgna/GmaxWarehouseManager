@@ -45,15 +45,25 @@ namespace Gmax.Models.Services.Validazione
                 errors.Add((nameof(model.MagazzinoOrigineSelezionato), "Non è stato possibile recuperare il magazzino selezionato."));
                 return errors;
             }
-            int qtaGiacenza = magazzino.GiacenzaList.First(
+            int qtaGiacenza = magazzino.GiacenzaList != null && magazzino.GiacenzaList.Any() ? 
+                magazzino.GiacenzaList.First(
                     g => g.TipoArticolo.Equals(model.TipoArticolo) &&
-                    g.CodiceArticolo.Equals(model.CodiceArticolo)).QtaGiacenza;
+                    g.CodiceArticolo.Equals(model.CodiceArticolo)).QtaGiacenza
+                : 0;
 
-            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByCodartTipoartAsync(model.TipoArticolo, model.CodiceArticolo);
-            IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList = assegnazioneService.GetRelevantAssegnazioneList(model, assegnazioneList, magazzino);
-            int alreadyAssignedQuantity = assegnazioneService.CalculateAlreadyAssignedQuantity(relevantAssegnazioneList);
+            int alreadyAssignedQuantity = 0;
+            int incomingAssignedQuantity = 0;
+            IEnumerable<AssegnazioneMagazzino>? assegnazioneList = await assegnazioneService.GetAssegnazioneListByCodartTipoartAsync(model.TipoArticolo, model.CodiceArticolo);
+            if (assegnazioneList != null && assegnazioneList.Any())
+            {
+                IEnumerable<AssegnazioneMagazzino>? assegnazioneInUscitaList = assegnazioneService.FilterAssegnazioneListPerMagorigineDatainserimento(model, assegnazioneList, magazzino);
+                alreadyAssignedQuantity = assegnazioneInUscitaList != null ? assegnazioneService.CalculateAssignedQuantity(assegnazioneInUscitaList) : 0;
 
-            int qtaDisp = qtaGiacenza - alreadyAssignedQuantity;
+                IEnumerable<AssegnazioneMagazzino>? assegnazioneInEntrataList = assegnazioneService.FilterAssegnazioneListPerMagdestinazioneDatainserimento(model, assegnazioneList, magazzino);
+                incomingAssignedQuantity = assegnazioneInEntrataList != null ? assegnazioneService.CalculateAssignedQuantity(assegnazioneInEntrataList) : 0;
+            }
+
+            int qtaDisp = qtaGiacenza - alreadyAssignedQuantity + incomingAssignedQuantity;
 
             if (model.QtaVersamento > qtaDisp)
             {

@@ -56,7 +56,7 @@
             <span asp-validation-for="QtaVersamento" class="text-danger"></span>
         </div>
     </div>
-    @if (Model.PreviousAssegnazione != 0)
+    @if (!Model.IsRevertOperation && Model.PreviousAssegnazione != 0)
     {
         <div class="col-sm-8">
             <div class="card">

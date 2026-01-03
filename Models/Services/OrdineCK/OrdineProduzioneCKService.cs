@@ -182,8 +182,8 @@ namespace Gmax.Models.Services.OrdineCK
                 magazzinoList = giacenzaList.Select(g => g.Magazzino).Where(m => m?.TipoMagazzino == Enums.TipoMagazzino.Fisico);
                 foreach (var magazzino in magazzinoList)
                 {
-                    IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList = assegnazioneService.GetRelevantAssegnazioneList(viewModel, assegnazioneList, magazzino);
-                    int alreadyAssignedQuantity = assegnazioneService.CalculateAlreadyAssignedQuantity(relevantAssegnazioneList);
+                    IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList = assegnazioneService.FilterAssegnazioneListPerMagorigineDatainserimento(viewModel, assegnazioneList, magazzino);
+                    int alreadyAssignedQuantity = assegnazioneService.CalculateAssignedQuantity(relevantAssegnazioneList);
                     disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.GiacenzaList.First(
                                 g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
                                 g.CodiceArticolo.Equals(viewModel.CodiceArticolo)).QtaGiacenza - alreadyAssignedQuantity);

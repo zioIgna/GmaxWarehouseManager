@@ -1,5 +1,6 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
+using Gmax.Models.Interfaces;
 using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
@@ -52,19 +53,53 @@ namespace Gmax.Models.Services.Assegnazione
             return assegnazione;
         }
 
-        public IEnumerable<AssegnazioneMagazzino>? GetRelevantAssegnazioneList(AssegnazioneModalViewModel viewModel, IEnumerable<AssegnazioneMagazzino>? assegnazioneList, Entities.Magazzino magazzino)
+        public IEnumerable<AssegnazioneMagazzino>? FilterAssegnazioneListPerMagorigineDatainserimento(AssegnazioneModalViewModel viewModel, IEnumerable<AssegnazioneMagazzino> assegnazioneList, Entities.Magazzino magazzino)
         {
-            return assegnazioneList?
+            IEnumerable<AssegnazioneMagazzino>? filteredAssegnazioneList = assegnazioneList
                                     .Where(a =>
+                                    //TODO: eliminare la condizione di equivalenza su TipoArticolo e CodiceArticolo:
                                         a.TipoArticolo.Equals(viewModel.TipoArticolo) &&
                                         a.CodiceArticolo.Equals(viewModel.CodiceArticolo) &&
-                                        a.MagazzinoOrigineId.Equals(magazzino.Id) &&
-                                        a.DataAssegnazione > magazzino.GiacenzaList.FirstOrDefault(
-                                            g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
-                                            g.CodiceArticolo.Equals(viewModel.CodiceArticolo))?.DataInserimento);
+                                        a.MagazzinoOrigineId.Equals(magazzino.Id));
+
+            if (filteredAssegnazioneList != null && filteredAssegnazioneList.Any() && magazzino.GiacenzaList != null && magazzino.GiacenzaList.Any())
+            {
+                filteredAssegnazioneList = filteredAssegnazioneList?.Where(a =>
+                    a.DataAssegnazione > magazzino.GiacenzaList
+                        .OrderByDescending(a => a.DataInserimento)
+                        .First(
+                            TipoartCodartMatch(viewModel))?
+                        .DataInserimento);
+            }
+
+            return filteredAssegnazioneList;
         }
 
-        public int CalculateAlreadyAssignedQuantity(IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList)
+        private static Func<ExpGiacenza, bool> TipoartCodartMatch(ITipoartCodart viewModel)
+        {
+            return g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
+                                        g.CodiceArticolo.Equals(viewModel.CodiceArticolo);
+        }
+
+        public IEnumerable<AssegnazioneMagazzino>? FilterAssegnazioneListPerMagdestinazioneDatainserimento(AssegnazioneModalViewModel viewModel, IEnumerable<AssegnazioneMagazzino> assegnazioneList, Entities.Magazzino magazzino)
+        {
+            IEnumerable<AssegnazioneMagazzino>? filteredAssegnazioneList = assegnazioneList
+                        .Where(a =>
+                            a.MagazzinoDestinazioneId.Equals(magazzino.Id));
+
+            if (filteredAssegnazioneList != null && filteredAssegnazioneList.Any() && magazzino.GiacenzaList != null && magazzino.GiacenzaList.Any())
+            {
+                filteredAssegnazioneList = filteredAssegnazioneList?.Where(a =>
+                    a.DataAssegnazione > magazzino.GiacenzaList
+                        .OrderByDescending(a => a.DataInserimento)
+                        .First(
+                            TipoartCodartMatch(viewModel))?
+                        .DataInserimento);
+            }
+
+            return filteredAssegnazioneList;
+        }
+        public int CalculateAssignedQuantity(IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList)
         {
             return relevantAssegnazioneList != null ? relevantAssegnazioneList.Sum(a => a.Quantita) : 0;
         }

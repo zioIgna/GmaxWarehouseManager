@@ -185,7 +185,7 @@ namespace Gmax.Controllers
                 throw new DbUpdateException("Il versamento non è andato a buon fine.");
             }
 
-            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, assegnazioneMag.Id);
+            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, assegnazioneMag.Id, model.IsRevertOperation);
         }
 
         public async Task<IActionResult> OpenAssegnazioneModal()
@@ -193,7 +193,7 @@ namespace Gmax.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditModalAsync(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId)
+        public async Task<IActionResult> EditModalAsync(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId, bool isRevertOperation = false)
         {
             AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
             assegnazioneModalViewModel.NroLancio = int.Parse(nroLancio);
@@ -210,6 +210,8 @@ namespace Gmax.Controllers
                 int.Parse(nroSottolancio),
                 tipoArticolo,
                 codArticolo)).Sum(a => a.Quantita);
+
+            assegnazioneModalViewModel.IsRevertOperation = isRevertOperation;
 
             assegnazioneModalViewModel.PreviousAssegnazione = prevAssegnazioneId;
             ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
@@ -232,6 +234,7 @@ namespace Gmax.Controllers
             assegnazioneModalViewModel.TipoArticolo = assegnazione.TipoArticolo;
             assegnazioneModalViewModel.CodiceArticolo = assegnazione.CodiceArticolo;
             assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
+            assegnazioneModalViewModel.IsRevertOperation = true;
             
             int disponibilitaNewMagOrigine = await ordineProduzioneCKService.CalculateDisponibilitaMagFromAssegnazioniAsync(assegnazione.NroLancio, assegnazione.NroSottolancio, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
             Magazzino newMagOrigine = await magazzinoService.GetMagazzinoByNLancioAndNSottolancioAsync(assegnazione.NroLancio, assegnazione.NroSottolancio);

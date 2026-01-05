@@ -182,11 +182,20 @@ namespace Gmax.Models.Services.OrdineCK
                 magazzinoList = giacenzaList.Select(g => g.Magazzino).Where(m => m?.TipoMagazzino == Enums.TipoMagazzino.Fisico);
                 foreach (var magazzino in magazzinoList)
                 {
-                    IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneList = assegnazioneService.FilterAssegnazioneListPerMagorigineDatainserimento(viewModel, assegnazioneList, magazzino);
-                    int alreadyAssignedQuantity = assegnazioneService.CalculateAssignedQuantity(relevantAssegnazioneList);
+                    int alreadyAssignedQuantity = 0;
+                    int incomingQuantity = 0;
+                    if (assegnazioneList != null && assegnazioneList.Any())
+                    {
+                        IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneNegativaList = assegnazioneService.FilterAssegnazioneListPerMagorigineDatainserimento(viewModel, assegnazioneList, magazzino);
+                        alreadyAssignedQuantity = assegnazioneService.CalculateAssignedQuantity(relevantAssegnazioneNegativaList);
+
+                        IEnumerable<AssegnazioneMagazzino>? relevantAssegnazionePositivaList = assegnazioneService.FilterAssegnazioneListPerMagdestinazioneDatainserimento(viewModel, assegnazioneList, magazzino);
+                        incomingQuantity = assegnazioneService.CalculateAssignedQuantity(relevantAssegnazionePositivaList);
+                    }
+
                     disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.GiacenzaList.First(
                                 g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
-                                g.CodiceArticolo.Equals(viewModel.CodiceArticolo)).QtaGiacenza - alreadyAssignedQuantity);
+                                g.CodiceArticolo.Equals(viewModel.CodiceArticolo)).QtaGiacenza - alreadyAssignedQuantity + incomingQuantity);
                 }
             }
             if (disponibilitaDict.Count == 0)
@@ -203,9 +212,9 @@ namespace Gmax.Models.Services.OrdineCK
             viewModel.DisponibilitaMagazzini = disponibilitaMagazzini;
         }
 
-        public async Task<int> CalculateDisponibilitaMagFromAssegnazioniAsync(int nroLancio, int nroSottolancio, string tipoArt, string codArt)
+        public async Task<int> CalculateDisponibilitaMagFromAssegnazioniAsync(int magId, string tipoArt, string codArt)
         {
-            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(nroLancio, nroSottolancio, tipoArt, codArt);
+            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magId, tipoArt, codArt);
             return (int)assegnazioneList?.Sum(a => a.Quantita);
         }
 

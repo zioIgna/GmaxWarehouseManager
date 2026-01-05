@@ -1,6 +1,7 @@
 ﻿using Gmax.Data;
 using Gmax.Models.Entities;
 using Gmax.Models.Interfaces;
+using Gmax.Models.Services.Magazzino;
 using Gmax.Models.ViewModels.AssegnazioneModal;
 using Gmax.Models.ViewModels.OrdineProdCompCK;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +11,12 @@ namespace Gmax.Models.Services.Assegnazione
     public class AssegnazioneService : IAssegnazioneService
     {
         private readonly GmaxDbContext context;
+        private readonly IMagazzinoService magazzinoService;
 
-        public AssegnazioneService(GmaxDbContext context)
+        public AssegnazioneService(GmaxDbContext context, IMagazzinoService magazzinoService)
         {
             this.context = context;
+            this.magazzinoService = magazzinoService;
         }
 
         public async Task<IEnumerable<Entities.AssegnazioneMagazzino>> GetAssegnazioneListByNrolancioNrosottolancioCodartTipoartAsync(int nroLancio, int nroSottolancio, string tipoArticolo, string codiceArticolo)
@@ -119,6 +122,23 @@ namespace Gmax.Models.Services.Assegnazione
                 && a.CodiceArticolo.Equals(codiceArticolo));
 
             return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByMagdestidTipoartCodart(int magId, string tipoArticolo, string codiceArticolo)
+        {
+            var query = context.AssegnazioniMagazzino.
+                Where(a => a.MagazzinoDestinazioneId == magId
+                && a.TipoArticolo.Equals(tipoArticolo)
+                && a.CodiceArticolo.Equals(codiceArticolo));
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByMagdestcodTipoartCodart(string magCod, string tipoArticolo, string codiecArticolo)
+        {
+            Entities.Magazzino magazzino = await magazzinoService.GetMagazzinoByCodeAsync(magCod);
+            return await GetAssegnazioneListByMagdestidTipoartCodart(magazzino.Id, tipoArticolo, codiecArticolo);
+
         }
     }
 }

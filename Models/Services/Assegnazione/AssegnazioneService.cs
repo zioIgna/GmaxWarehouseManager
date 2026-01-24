@@ -138,7 +138,21 @@ namespace Gmax.Models.Services.Assegnazione
         {
             Entities.Magazzino magazzino = await magazzinoService.GetMagazzinoByCodeAsync(magCod);
             return await GetAssegnazioneListByMagdestidTipoartCodart(magazzino.Id, tipoArticolo, codiecArticolo);
+        }
 
+        public async Task<string> GetMagOriginCodeFromAssegnazioneIdAsync(int assegnazioneId)
+        {
+            var assegnazione = await GetAssegnazioneMagazzinoByIdAsync(assegnazioneId);
+            if (assegnazione == null)
+            {
+                throw new Exception("Non è stato possibile recuperare l'assegnazione magazzino con id: " + assegnazioneId);
+            }
+            var magazzino = await magazzinoService.GetMagazzinoByIdAsync(assegnazione.MagazzinoOrigineId);
+            if (magazzino == null)
+            {
+                throw new Exception("Non è stato possibile recuperare il magazzino con id: " + assegnazione.MagazzinoOrigineId);
+            }
+            return magazzino.CodMagazzino;
         }
     }
 }

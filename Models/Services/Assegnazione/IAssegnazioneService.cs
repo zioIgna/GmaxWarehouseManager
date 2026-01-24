@@ -17,5 +17,6 @@ namespace Gmax.Models.Services.Assegnazione
         Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByMagoriginidTipoartCodart(int magId, string tipoArticolo, string codiceArticolo);
         Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByMagdestidTipoartCodart(int magId, string tipoArticolo, string codiceArticolo);
         Task<IEnumerable<AssegnazioneMagazzino>> GetAssegnazioneListByMagdestcodTipoartCodart(string magCod, string tipoArticolo, string codiecArticolo);
+        Task<string> GetMagOriginCodeFromAssegnazioneIdAsync(int assegnazioneId);
     }
 }

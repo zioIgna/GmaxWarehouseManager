@@ -1,7 +1,9 @@
 ﻿using Gmax.Data;
+using Gmax.Models.DTOs;
 using Gmax.Models.Entities;
 using Gmax.Models.ExtensionMethods;
 using Gmax.Models.Extensions;
+using Gmax.Models.Interfaces;
 using Gmax.Models.Services.ArticoloCK;
 using Gmax.Models.Services.Assegnazione;
 using Gmax.Models.Services.Giacenza;
@@ -201,77 +203,9 @@ namespace Gmax.Controllers
 
         public async Task<IActionResult> EditModalAsync(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId, bool isRevertOperation = false)
         {
-            AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
-            assegnazioneModalViewModel.NroLancio = int.Parse(nroLancio);
-            assegnazioneModalViewModel.NroSottolancio = int.Parse(nroSottolancio);
-            assegnazioneModalViewModel.TipoArticolo = tipoArticolo;
-            assegnazioneModalViewModel.CodiceArticolo = codArticolo;
-            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(tipoArticolo, codArticolo);
-
-            AssegnazioneMagazzino prevAssegnazione = null;
-            if (prevAssegnazioneId != 0)
-            {
-                prevAssegnazione = await assegnazioneService.GetAssegnazioneMagazzinoByIdAsync(prevAssegnazioneId);
-                if (prevAssegnazione == null)
-                {
-                    throw new Exception("Non è stato possibile recuperare l'assegnazione magazzino con id: " + prevAssegnazioneId);
-                }
-            }
-
-            if (!isRevertOperation)
-            {
-                assegnazioneModalViewModel.SetDefaultMagDestCode();
-            }
-            else
-            {
-                string magDestCode = await assegnazioneService.GetMagOriginCodeFromAssegnazioneIdAsync(prevAssegnazioneId);
-                assegnazioneModalViewModel.MagazzinoDestinazione = magDestCode;
-            }
-
-            if (!isRevertOperation)
-            {
-                await ordineProduzioneCKService.CalculateDisponibilitaMagazzini(assegnazioneModalViewModel);
-            }
-            else
-            {
-                Dictionary<string, int> disponibilitaMagazzinoOrigineDict = new Dictionary<string, int>();
-                Magazzino magOrigine = await magazzinoService.GetMagazzinoByIdAsync(prevAssegnazione.MagazzinoDestinazioneId);
-                ExpGiacenza giacenzaMagOrigine = await giacenzaSevice.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(assegnazioneModalViewModel.MagazzinoOrigineSelezionato, tipoArticolo, codArticolo);
-                int qtaDispMagOrigineDaGiacenza = giacenzaMagOrigine?.QtaGiacenza ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazionePositivaListByArtMagorigin = await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magOrigine.Id, tipoArticolo, codArticolo);
-                int qtaDispPositivaMagOrigine = assegnazionePositivaListByArtMagorigin?.Sum(a => a.Quantita) ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazioneNegativaListByArtMagorigin = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(magOrigine.Id, tipoArticolo, codArticolo);
-                int qtaDispNegativaMagOrigine = assegnazioneNegativaListByArtMagorigin?.Sum(a => a.Quantita) ?? 0;
-                int qtaDisponibileMagOrigine = qtaDispMagOrigineDaGiacenza + qtaDispPositivaMagOrigine - qtaDispNegativaMagOrigine;
-                disponibilitaMagazzinoOrigineDict.Add(magOrigine.CodMagazzino, qtaDisponibileMagOrigine);
-                ordineProduzioneCKService.SetDisponibilitaMagByDictionary(disponibilitaMagazzinoOrigineDict, assegnazioneModalViewModel);
-            }
-
-            Magazzino magDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(assegnazioneModalViewModel.MagazzinoDestinazione);
-            if (magDestinazione == null)
-            {
-                magDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(assegnazioneModalViewModel.NroLancio, assegnazioneModalViewModel.NroSottolancio);
-                if (magDestinazione == null)
-                {
-                    throw new Exception($"Non è stato possibile creare un magazzino per il Nro Lancio {nroLancio} e Nro Sottolancio {nroSottolancio}");
-                }
-            }
-
-            int qtaDisponibileDaGiacenza = 0;
-            if (prevAssegnazioneId != 0)
-            {
-                qtaDisponibileDaGiacenza = (await giacenzaSevice.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(assegnazioneModalViewModel.MagazzinoDestinazione, tipoArticolo, codArticolo)).QtaGiacenza;
-            }
-            IEnumerable<AssegnazioneMagazzino> assegnazionePositivaListByArtMagdest = await assegnazioneService.GetAssegnazioneListByMagdestcodTipoartCodart(assegnazioneModalViewModel.MagazzinoDestinazione, tipoArticolo, codArticolo);
-            int qtaDispPositivaMagDestinazione = assegnazionePositivaListByArtMagdest.Sum(a => a.Quantita);
-            IEnumerable<AssegnazioneMagazzino> assegnazioneNegativaListByArtMagdest = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(magDestinazione.Id, tipoArticolo, codArticolo);
-            int qtaDispNegativaMagDestinazione = assegnazioneNegativaListByArtMagdest.Sum(a => a.Quantita);
-            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = qtaDisponibileDaGiacenza + qtaDispPositivaMagDestinazione - qtaDispNegativaMagDestinazione;
-
-            assegnazioneModalViewModel.IsRevertOperation = isRevertOperation;
-
-            assegnazioneModalViewModel.PreviousAssegnazione = prevAssegnazioneId;
-            //ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
+            AssegnazioneViewModelBase assegnazioneViewModelBase = new AssegnazioneViewModelBase(nroLancio, nroLancio, tipoArticolo, codArticolo, prevAssegnazioneId, isRevertOperation);
+            AssegnazioneModalViewModel assegnazioneModalViewModel = await ordineProduzioneCKService.CreateAssegnazioneModalViewModelAsync(assegnazioneViewModelBase);
+            
             if (ModelState.IsValid)
             {
                 ModelState.Clear();
@@ -284,63 +218,10 @@ namespace Gmax.Controllers
         [HttpPost]
         public async Task<IActionResult> InvertiVersamento(int assegnazioneId)
         {
-            AssegnazioneMagazzino assegnazione = await assegnazioneService.GetAssegnazioneMagazzinoByIdAsync(assegnazioneId);
-            if (assegnazione == null)
-            {
-                throw new Exception("Non è stato possibile recuperare i valori dell'assegnazione con Id: " + assegnazioneId);
-            }
-
-            AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
-            assegnazioneModalViewModel.NroLancio = assegnazione.NroLancio;
-            assegnazioneModalViewModel.NroSottolancio = assegnazione.NroSottolancio;
-            assegnazioneModalViewModel.TipoArticolo = assegnazione.TipoArticolo;
-            assegnazioneModalViewModel.CodiceArticolo = assegnazione.CodiceArticolo;
-            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
-            assegnazioneModalViewModel.IsRevertOperation = true;
-            
-            Magazzino newMagOrigine = await magazzinoService.GetMagazzinoByNLancioAndNSottolancioAsync(assegnazione.NroLancio, assegnazione.NroSottolancio);
-            if (newMagOrigine == null)
-            {
-                throw new Exception($"Non è stato possibile recuperare il magazzino con nroLancio {assegnazione.NroLancio} e nroSottolancio {assegnazione.NroSottolancio}");
-            }
-            int disponibilitaNewMagOrigine = await ordineProduzioneCKService.CalculateDisponibilitaMagFromAssegnazioniAsync(newMagOrigine.Id, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
-            Dictionary<string, int> dict = new Dictionary<string, int>();
-            dict.Add(newMagOrigine.CodMagazzino, disponibilitaNewMagOrigine);
-            ordineProduzioneCKService.SetDisponibilitaMagByDictionary(dict, assegnazioneModalViewModel);
-
-            Magazzino newMagDestinazione = await magazzinoService.GetMagazzinoByIdAsync(assegnazione.MagazzinoOrigineId);
-            if (newMagDestinazione == null)
-            {
-                throw new Exception("Non è stato trovato il magazzino di origine del versamento con Id: " + assegnazione.MagazzinoOrigineId);
-            }
-            assegnazioneModalViewModel.MagazzinoDestinazione = newMagDestinazione.CodMagazzino;
-            int disponibilitaNewMagDestDaGiacenza = await ordineProdCompCKService.GetQtaDispDaGiacenza(assegnazione.MagazzinoOrigineId, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
-            IEnumerable<AssegnazioneMagazzino> assegnazioneList = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(assegnazione.MagazzinoOrigineId, assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
-            if (assegnazioneList.Any())
-            {
-                assegnazioneList = await FilterOutOldAssegnazioniAsync(assegnazioneList, assegnazione.MagazzinoOrigineId);
-            }
-            int qtaGiaAssegnata = assegnazioneList.Sum(a => a.Quantita);
-            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = disponibilitaNewMagDestDaGiacenza - qtaGiaAssegnata;
-
-            assegnazioneModalViewModel.QtaVersamento = (decimal)assegnazione.Quantita;
-
-            assegnazioneModalViewModel.PreviousAssegnazione = assegnazioneId;
+            AssegnazioneModalViewModel assegnazioneModalViewModel = await ordineProduzioneCKService.CreateAssegnazioneModalViewModelFromAssegnazioneidAsync(assegnazioneId);
             ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
             return PartialView(VALORIZZAZIONE_REVERT, assegnazioneModalViewModel);
         }
-
-        private async Task<IEnumerable<AssegnazioneMagazzino>> FilterOutOldAssegnazioniAsync(IEnumerable<AssegnazioneMagazzino> assegnazioneList, int magazzinoId)
-        {
-            Magazzino magazzino = await magazzinoService.GetMagazzinoByIdAsync(magazzinoId);
-            if (magazzino == null)
-            {
-                throw new Exception("Non è stato possibile recuperare il magazzino con id: " + magazzinoId);
-            }
-            ExpGiacenza giacenza = await giacenzaSevice.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, assegnazioneList.First().TipoArticolo, assegnazioneList.First().CodiceArticolo);
-            return assegnazioneList.Where(a => a.DataAssegnazione > giacenza.DataInserimento);
-        }
-
 
         #region Metodi da Scaffolding
         // GET: OrdineProduzioneCKs/Create

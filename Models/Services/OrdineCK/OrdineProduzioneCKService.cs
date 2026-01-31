@@ -186,20 +186,9 @@ namespace Gmax.Models.Services.OrdineCK
                 magazzinoList = giacenzaList.Select(g => g.Magazzino).Where(m => m?.TipoMagazzino == Enums.TipoMagazzino.Fisico);
                 foreach (var magazzino in magazzinoList)
                 {
-                    int alreadyAssignedQuantity = 0;
-                    int incomingQuantity = 0;
-                    if (assegnazioneList != null && assegnazioneList.Any())
-                    {
-                        IEnumerable<AssegnazioneMagazzino>? relevantAssegnazioneNegativaList = assegnazioneService.FilterAssegnazioneListPerMagorigineDatainserimento(viewModel, assegnazioneList, magazzino);
-                        alreadyAssignedQuantity = assegnazioneService.CalculateAssignedQuantity(relevantAssegnazioneNegativaList);
+                    int qtaDispOverall = await CalculateOverallDispMagAsync(viewModel.TipoArticolo, viewModel.CodArticolo, magazzino);
 
-                        IEnumerable<AssegnazioneMagazzino>? relevantAssegnazionePositivaList = assegnazioneService.FilterAssegnazioneListPerMagdestinazioneDatainserimento(viewModel, assegnazioneList, magazzino);
-                        incomingQuantity = assegnazioneService.CalculateAssignedQuantity(relevantAssegnazionePositivaList);
-                    }
-
-                    disponibilitaDict.Add(magazzino.CodMagazzino, magazzino.GiacenzaList.First(
-                                g => g.TipoArticolo.Equals(viewModel.TipoArticolo) &&
-                                g.CodiceArticolo.Equals(viewModel.CodiceArticolo)).QtaGiacenza - alreadyAssignedQuantity + incomingQuantity);
+                    disponibilitaDict.Add(magazzino.CodMagazzino, qtaDispOverall);
                 }
             }
             if (disponibilitaDict.Count == 0)
@@ -367,11 +356,6 @@ namespace Gmax.Models.Services.OrdineCK
 
             return updatedOrdineProdCompCK;
         }
-
-        public async Task<int> CreateAssegnazioneAsync()
-        {
-            throw new NotImplementedException();
-        }
     
         public async Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelFromModelBaseAsync(IAssegnazioneViewModelBase viewModelBase)
         {
@@ -469,17 +453,6 @@ namespace Gmax.Models.Services.OrdineCK
 
             return await CreateAssegnazioneModalViewModelAsync(assegnazioneModalViewModel);
         }
-
-        private async Task<IEnumerable<AssegnazioneMagazzino>> FilterOutOldAssegnazioniAsync(IEnumerable<AssegnazioneMagazzino> assegnazioneList, int magazzinoId)
-        {
-            Entities.Magazzino magazzino = await magazzinoService.GetMagazzinoByIdAsync(magazzinoId);
-            if (magazzino == null)
-            {
-                throw new Exception("Non è stato possibile recuperare il magazzino con id: " + magazzinoId);
-            }
-            ExpGiacenza giacenza = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, assegnazioneList.First().TipoArticolo, assegnazioneList.First().CodiceArticolo);
-            return assegnazioneList.Where(a => a.DataAssegnazione > giacenza.DataInserimento);
-        }
     
         public async Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelAsync(IAssegnazioneViewModelBase viewModelBase)
         {
@@ -510,14 +483,7 @@ namespace Gmax.Models.Services.OrdineCK
                         throw new Exception($"Non è stato possibile creare un magazzino per il Nro Lancio {viewModelBase.NroLancio} e Nro Sottolancio {viewModelBase.NroSottolancio}");
                     }
                 }
-
-                ExpGiacenza giacenzaMagDest = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(assegnazioneModalViewModel.MagazzinoDestinazione, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispMagDestDaGiacenza = giacenzaMagDest?.QtaGiacenza ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazionePositivaList = await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magDestinazione.Id, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispMagDestPositiva = assegnazionePositivaList?.Sum(a => a.Quantita) ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazioneNegativaList = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(magDestinazione.Id, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispMagDestNegativa = assegnazioneNegativaList?.Sum(a => a.Quantita) ?? 0;
-                int qtaDispMagDestOverall = qtaDispMagDestDaGiacenza + qtaDispMagDestPositiva - qtaDispMagDestNegativa;
+                int qtaDispMagDestOverall = await CalculateOverallDispMagAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo, magDestinazione);
                 assegnazioneModalViewModel.QtaDisponibileMagDestinazione = qtaDispMagDestOverall;
                 #endregion
             }
@@ -531,13 +497,7 @@ namespace Gmax.Models.Services.OrdineCK
                 #region Magazzino Origine
                 Entities.Magazzino magOrigine = await magazzinoService.GetMagazzinoByIdAsync(prevAssegnazione.MagazzinoDestinazioneId);
                 Dictionary<string, int> disponibilitaMagazzinoOrigineDict = new Dictionary<string, int>();
-                ExpGiacenza giacenzaMagOrigine = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magOrigine.CodMagazzino, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispMagOrigineDaGiacenza = giacenzaMagOrigine?.QtaGiacenza ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazionePositivaListByArtMagorigin = await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magOrigine.Id, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispPositivaMagOrigine = assegnazionePositivaListByArtMagorigin?.Sum(a => a.Quantita) ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazioneNegativaListByArtMagorigin = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(magOrigine.Id, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispNegativaMagOrigine = assegnazioneNegativaListByArtMagorigin?.Sum(a => a.Quantita) ?? 0;
-                int qtaDispMagOrigineOverall = qtaDispMagOrigineDaGiacenza + qtaDispPositivaMagOrigine - qtaDispNegativaMagOrigine;
+                int qtaDispMagOrigineOverall = await CalculateOverallDispMagAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo, magOrigine);
                 disponibilitaMagazzinoOrigineDict.Add(magOrigine.CodMagazzino, qtaDispMagOrigineOverall);
                 SetDisponibilitaMagByDictionary(disponibilitaMagazzinoOrigineDict, assegnazioneModalViewModel);
                 #endregion
@@ -549,18 +509,50 @@ namespace Gmax.Models.Services.OrdineCK
                     throw new Exception("Non è stato possibile recuperare il magazzino con id: " + prevAssegnazione.MagazzinoOrigineId); //await assegnazioneService.GetMagOriginCodeFromAssegnazioneIdAsync(viewModelBase.prevAssegnazioneId);
                 }
                 assegnazioneModalViewModel.MagazzinoDestinazione = magDest.CodMagazzino;
-                ExpGiacenza giacenzaMagDest = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magDest.CodMagazzino, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispMagDestDaGiacenza = giacenzaMagDest?.QtaGiacenza ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazionePositivaListByArtMagdest = await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magDest.Id, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispPositivaMagDest = assegnazionePositivaListByArtMagdest?.Sum(a => a.Quantita) ?? 0;
-                IEnumerable<AssegnazioneMagazzino> assegnazioneNegativaListByArtMagdest = await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(magDest.Id, viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
-                int qtaDispNegativaMagDest = assegnazioneNegativaListByArtMagdest?.Sum(a => a.Quantita) ?? 0;
-                int qtaDispMagDestOverall = qtaDispMagDestDaGiacenza + qtaDispPositivaMagDest - qtaDispNegativaMagDest;
+                int qtaDispMagDestOverall = await CalculateOverallDispMagAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo, magDest);
                 assegnazioneModalViewModel.QtaDisponibileMagDestinazione = qtaDispMagDestOverall;
                 #endregion
             }
 
             return assegnazioneModalViewModel;
+        }
+
+        private IEnumerable<AssegnazioneMagazzino> FilterAssegnazioneMagazzinoListByDate(IEnumerable<AssegnazioneMagazzino> list, DateTime date)
+        {
+            return list.Where(e => DateTime.Compare(e.DataAssegnazione, date) > 0);
+        }
+
+        private async Task<int> CalculateOverallDispMagAsync(string tipoArticolo, string codArticolo, Entities.Magazzino magazzino)
+        {
+            ExpGiacenza giacenza = await giacenzaService.GetGiacenzaByCodMagAndTipoArtAndCodArtAsync(magazzino.CodMagazzino, tipoArticolo, codArticolo);
+            int qtaDispDaGiacenza = giacenza?.QtaGiacenza ?? 0;
+
+            IEnumerable<AssegnazioneMagazzino> assegnazioniPositiveList = await GetQtaDispPositivaAssegnazioniListAsync(tipoArticolo, codArticolo, magazzino.Id);
+            int qtaDispPositivaDaAssegnazioni = GetQtaDispFromAssegnazioni(giacenza, assegnazioniPositiveList);
+
+            IEnumerable<AssegnazioneMagazzino> assegnazioniNegativeList = await GetQtaDispNegativaAssegnazioniListAsync(tipoArticolo, codArticolo, magazzino.Id);
+            int qtaDispNegativaDaAssegnazioni = GetQtaDispFromAssegnazioni(giacenza, assegnazioniNegativeList);
+
+            return qtaDispDaGiacenza + qtaDispPositivaDaAssegnazioni - qtaDispNegativaDaAssegnazioni;
+        }
+
+        private async Task<IEnumerable<AssegnazioneMagazzino>> GetQtaDispPositivaAssegnazioniListAsync(string tipoArticolo, string codArticolo, int magId)
+        {
+            return await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magId, tipoArticolo, codArticolo);
+        }
+
+        private async Task<IEnumerable<AssegnazioneMagazzino>> GetQtaDispNegativaAssegnazioniListAsync(string tipoArticolo, string codArticolo, int codMagazzino)
+        {
+            return await assegnazioneService.GetAssegnazioneListByMagoriginidTipoartCodart(codMagazzino, tipoArticolo, codArticolo);
+        }
+
+        private int GetQtaDispFromAssegnazioni(ExpGiacenza? giacenza, IEnumerable<AssegnazioneMagazzino> assegnazioniList)
+        {
+            if (assegnazioniList.Any() && giacenza != null)
+            {
+                assegnazioniList = FilterAssegnazioneMagazzinoListByDate(assegnazioniList, giacenza.DataInserimento);
+            }
+            return assegnazioniList?.Sum(a => a.Quantita) ?? 0;
         }
     }
 }

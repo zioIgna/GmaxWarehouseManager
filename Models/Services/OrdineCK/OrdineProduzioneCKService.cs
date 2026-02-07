@@ -448,6 +448,7 @@ namespace Gmax.Models.Services.OrdineCK
             assegnazioneModalViewModel.TipoArticolo = assegnazione.TipoArticolo;
             assegnazioneModalViewModel.CodiceArticolo = assegnazione.CodiceArticolo;
             assegnazioneModalViewModel.PrevAssegnazioneId = assegnazioneId;
+            assegnazioneModalViewModel.QtaVersamento = assegnazione.Quantita;
             //assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(assegnazione.TipoArticolo, assegnazione.CodiceArticolo);
             assegnazioneModalViewModel.IsRevertOperation = true;
 
@@ -464,6 +465,7 @@ namespace Gmax.Models.Services.OrdineCK
             assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
             assegnazioneModalViewModel.IsRevertOperation = viewModelBase.IsRevertOperation;
             assegnazioneModalViewModel.PreviousAssegnazione = viewModelBase.PrevAssegnazioneId;
+            assegnazioneModalViewModel.QtaVersamento = viewModelBase.QtaVersamento;
 
             AssegnazioneMagazzino? prevAssegnazione = null;
             if (!viewModelBase.IsRevertOperation)

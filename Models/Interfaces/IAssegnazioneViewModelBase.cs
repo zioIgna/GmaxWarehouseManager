@@ -8,5 +8,6 @@
         public string CodArticolo { get; set; }
         public int PrevAssegnazioneId { get; set; }
         public bool IsRevertOperation { get; set; }
+        public decimal QtaVersamento { get; set; }
     }
 }

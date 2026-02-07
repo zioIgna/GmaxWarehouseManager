@@ -4,13 +4,14 @@ namespace Gmax.Models.DTOs
 {
     public class AssegnazioneViewModelBase : IAssegnazioneViewModelBase
     {
-        public AssegnazioneViewModelBase(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId, bool isRevertOperation)
+        public AssegnazioneViewModelBase(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId, decimal qtaVersamento, bool isRevertOperation)
         {
             this.NroLancio = nroLancio;
             this.NroSottolancio = nroSottolancio;
             this.TipoArticolo = tipoArticolo;
             this.CodArticolo = codArticolo;
             this.PrevAssegnazioneId = prevAssegnazioneId;
+            this.QtaVersamento = qtaVersamento;
             this.IsRevertOperation = isRevertOperation;
         }
 
@@ -20,5 +21,6 @@ namespace Gmax.Models.DTOs
         public string CodArticolo { get; set; }
         public int PrevAssegnazioneId { get; set; }
         public bool IsRevertOperation { get; set; }
+        public decimal QtaVersamento { get; set; }
     }
 }

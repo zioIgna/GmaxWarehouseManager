@@ -168,7 +168,7 @@ namespace Gmax.Controllers
 
             if (!ModelState.IsValid)
             {
-                return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, model.PreviousAssegnazione, model.IsRevertOperation);
+                return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, model.PreviousAssegnazione, model.QtaVersamento, model.IsRevertOperation);
             }
 
             ModelState.Clear();
@@ -193,7 +193,7 @@ namespace Gmax.Controllers
                 throw new DbUpdateException("Il versamento non è andato a buon fine.");
             }
 
-            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, assegnazioneMag.Id, model.IsRevertOperation);
+            return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, assegnazioneMag.Id, model.QtaVersamento, model.IsRevertOperation);
         }
 
         public async Task<IActionResult> OpenAssegnazioneModal()
@@ -201,9 +201,9 @@ namespace Gmax.Controllers
             return View();
         }
 
-        public async Task<IActionResult> EditModalAsync(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId, bool isRevertOperation = false)
+        public async Task<IActionResult> EditModalAsync(string nroLancio, string nroSottolancio, string tipoArticolo, string codArticolo, int prevAssegnazioneId, decimal qtaVersamento, bool isRevertOperation = false)
         {
-            AssegnazioneViewModelBase assegnazioneViewModelBase = new AssegnazioneViewModelBase(nroLancio, nroLancio, tipoArticolo, codArticolo, prevAssegnazioneId, isRevertOperation);
+            AssegnazioneViewModelBase assegnazioneViewModelBase = new AssegnazioneViewModelBase(nroLancio, nroLancio, tipoArticolo, codArticolo, prevAssegnazioneId, qtaVersamento, isRevertOperation);
             AssegnazioneModalViewModel assegnazioneModalViewModel = await ordineProduzioneCKService.CreateAssegnazioneModalViewModelAsync(assegnazioneViewModelBase);
             
             if (ModelState.IsValid)

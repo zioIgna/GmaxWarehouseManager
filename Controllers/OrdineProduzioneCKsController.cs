@@ -35,7 +35,8 @@ namespace Gmax.Controllers
         private readonly IAssegnazioneValidator validator;
         private readonly IGiacenzaService giacenzaSevice;
 
-        private const string ASSEGNAZIONE_MODAL = "/Views/Shared/Modal/_AssegnazioneModal.cshtml";
+        private const string ASSEGNAZIONE_MODAL = "/Views/Shared/Modal/_AssegnazioneStraightModal.cshtml";
+        private const string ASSEGNAZIONE_PER_INVERSIONE_MODAL = "/Views/Shared/Modal/_AssegnazioneStraightPerInversioneModal.cshtml";
         private const string REVERT_MODAL = "/Views/Shared/Modal/_RevertModal.cshtml";
         private const string VALORIZZAZIONE_REVERT = "/Views/Shared/Modal/_ValorizzazioneRevert.cshtml";
 
@@ -220,7 +221,37 @@ namespace Gmax.Controllers
         {
             AssegnazioneModalViewModel assegnazioneModalViewModel = await ordineProduzioneCKService.CreateAssegnazioneModalViewModelFromAssegnazioneidAsync(assegnazioneId);
             ModelState.Remove(nameof(assegnazioneModalViewModel.PreviousAssegnazione));
-            return PartialView(VALORIZZAZIONE_REVERT, assegnazioneModalViewModel);
+            return PartialView(REVERT_MODAL, assegnazioneModalViewModel);
+            //return PartialView(VALORIZZAZIONE_REVERT, assegnazioneModalViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AssegnaValoreMagazzinoDaRevert(AssegnazioneModalViewModel model, CancellationToken cancellationToken)
+        {
+            var errors = await validator.ValidateAsync(model, cancellationToken);
+            foreach (var (member, message) in errors)
+            {
+                ModelState.AddModelError(member, message);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return await EditModalAsync(model.NroLancio.ToString(), model.NroSottolancio.ToString(), model.TipoArticolo, model.CodiceArticolo, model.PreviousAssegnazione, model.QtaVersamento, model.IsRevertOperation);
+            }
+            Magazzino magazzinoScelto = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoOrigineSelezionato);
+            if (magazzinoScelto == null)
+            {
+                throw new KeyNotFoundException("Non è stato possibile identificare il magazzino con codice: " + model.MagazzinoOrigineSelezionato);
+            }
+            Magazzino magazzinoDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(model.MagazzinoDestinazione);
+            if (magazzinoDestinazione == null)
+            {
+                magazzinoDestinazione = await magazzinoService.CreateMagazzinoFromNrolancioNrosottolancioAsync(model.NroLancio, model.NroSottolancio);
+            }
+            AssegnazioneMagazzino assegnazioneMag = await assegnazioneService.CreateAssegnazioneMagazzinoFromViewModelAsync(model, magazzinoScelto.Id, magazzinoDestinazione.Id);
+
+            AssegnazioneModalViewModel assegnazioneModalViewModel = await ordineProduzioneCKService.CreateAssegnazioneModalViewModelFromRevertAsync(model);   
+            return PartialView(REVERT_MODAL, assegnazioneModalViewModel);
         }
 
         #region Metodi da Scaffolding

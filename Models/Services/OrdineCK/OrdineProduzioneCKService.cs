@@ -519,6 +519,40 @@ namespace Gmax.Models.Services.OrdineCK
             return assegnazioneModalViewModel;
         }
 
+        public async Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelFromRevertAsync(AssegnazioneModalViewModel viewModelBase)
+        {
+            AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();
+            assegnazioneModalViewModel.NroLancio = viewModelBase.NroLancio;
+            assegnazioneModalViewModel.NroSottolancio = viewModelBase.NroSottolancio;
+            assegnazioneModalViewModel.TipoArticolo = viewModelBase.TipoArticolo;
+            assegnazioneModalViewModel.CodiceArticolo = viewModelBase.CodArticolo;
+            assegnazioneModalViewModel.Articolo = await articoloCKService.GetArticoloCKByKeyAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo);
+            assegnazioneModalViewModel.IsRevertOperation = viewModelBase.IsRevertOperation;
+            assegnazioneModalViewModel.PreviousAssegnazione = viewModelBase.PrevAssegnazioneId;
+            assegnazioneModalViewModel.QtaVersamento = viewModelBase.QtaVersamento;
+
+            #region Magazzino Origine
+            Entities.Magazzino magOrigine = await magazzinoService.GetMagazzinoByCodeAsync(viewModelBase.MagazzinoOrigineSelezionato);
+            Dictionary<string, int> disponibilitaMagazzinoOrigineDict = new Dictionary<string, int>();
+            int qtaDispMagOrigineOverall = await CalculateOverallDispMagAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo, magOrigine);
+            disponibilitaMagazzinoOrigineDict.Add(magOrigine.CodMagazzino, qtaDispMagOrigineOverall);
+            SetDisponibilitaMagByDictionary(disponibilitaMagazzinoOrigineDict, assegnazioneModalViewModel);
+            #endregion
+
+            #region Magazzino Destinazione
+            Entities.Magazzino magDestinazione = await magazzinoService.GetMagazzinoByCodeAsync(viewModelBase.MagazzinoDestinazione);
+            if (magDestinazione == null)
+            {
+                throw new Exception("Non è stato possibile recuperare il magazzino con id: " + viewModelBase.MagazzinoDestinazione);
+            }
+            assegnazioneModalViewModel.MagazzinoDestinazione = magDestinazione.CodMagazzino;
+            int qtaDispMagDestOverall = await CalculateOverallDispMagAsync(viewModelBase.TipoArticolo, viewModelBase.CodArticolo, magDestinazione);
+            assegnazioneModalViewModel.QtaDisponibileMagDestinazione = qtaDispMagDestOverall;
+            #endregion
+
+            return assegnazioneModalViewModel;
+        }
+
         private IEnumerable<AssegnazioneMagazzino> FilterAssegnazioneMagazzinoListByDate(IEnumerable<AssegnazioneMagazzino> list, DateTime date)
         {
             return list.Where(e => DateTime.Compare(e.DataAssegnazione, date) > 0);

@@ -19,5 +19,6 @@ namespace Gmax.Models.Services.OrdineCK
         Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelFromModelBaseAsync(IAssegnazioneViewModelBase viewModelBase);
         Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelFromAssegnazioneidAsync(int assegnazioneId);
         Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelAsync(IAssegnazioneViewModelBase viewModelBase);
+        Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelFromRevertAsync(AssegnazioneModalViewModel viewModelBase);
     }
 }

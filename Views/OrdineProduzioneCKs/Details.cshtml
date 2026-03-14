@@ -130,6 +130,28 @@
         }
     })
 
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     document.addEventListener('hidden.bs.modal', function (event) {
+    //         // rimuove eventuali backdrop rimasti
+    //         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    //         // ripristina body
+    //         document.body.classList.remove('modal-open');
+    //         document.body.style.paddingRight = '';
+    //         // dispose dell'istanza chiusa (se vuoi)
+    //         const modalEl = event.target;
+    //         const instance = bootstrap.Modal.getInstance(modalEl);
+    //         if (instance) instance.dispose();
+    //     });
+    // });
+
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     document.addEventListener('hidden.bs.modal', function (event) {
+    //         // ricarica completa della pagina
+    //         location.reload();
+    //         // oppure: window.location.href = window.location.href;
+    //     });
+    // });
+
     function updateTargetFromSelect(selectEl) {
       // const val = selectEl.value;
       const val = selectEl.options[selectEl.selectedIndex].dataset.qtamag;
@@ -153,9 +175,8 @@
                 updateTargetFromSelect(magSelect);
             }
 
-            const bsModal = new bootstrap.Modal(modalEl);
+            const bsModal = bootstrap.Modal.getOrCreateInstance(modalEl);
             bsModal.show();
         }
     }
-
 </script>

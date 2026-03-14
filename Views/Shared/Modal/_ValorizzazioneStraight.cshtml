@@ -70,7 +70,8 @@
                                asp-route-assegnazioneId="@Model.PreviousAssegnazione"
                                data-ajax="true"
                                data-ajax-mode="replace"
-                               data-ajax-update="#versamento-section"
+                               data-ajax-update="#modal-container"
+                               data-ajax-success="openModal"
                                data-ajax-method="post">
                                 <i class="bi bi-arrow-left-square me-1"></i> Inverti
                             </a>

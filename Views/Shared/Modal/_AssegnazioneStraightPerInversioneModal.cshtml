@@ -33,7 +33,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="assegnazioneModalForm" asp-action="AssegnaValoreMagazzinoDaRevert" asp-controller="OrdineProduzioneCKs" method="post"
+                <form id="assegnazioneModalForm" asp-action="AssegnaValoreAMagazzino" asp-controller="OrdineProduzioneCKs" method="post" 
                       data-ajax="true"
                       data-ajax-mode="replace"
                       data-ajax-update="#modal-container"
@@ -75,7 +75,7 @@
                     <hr />
                     <h5>Effettua Versamento</h5>
                     <div id="versamento-section">
-                        <partial name="/Views/Shared/Modal/_ValorizzazioneRevert.cshtml" model="@Model"></partial>
+                        <partial name="/Views/Shared/Modal/_ValorizzazioneStraightPerInversione.cshtml" model="@Model"></partial>
                     </div>
                 </form>
             </div>

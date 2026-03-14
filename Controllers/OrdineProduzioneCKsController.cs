@@ -36,9 +36,7 @@ namespace Gmax.Controllers
         private readonly IGiacenzaService giacenzaSevice;
 
         private const string ASSEGNAZIONE_MODAL = "/Views/Shared/Modal/_AssegnazioneStraightModal.cshtml";
-        private const string ASSEGNAZIONE_PER_INVERSIONE_MODAL = "/Views/Shared/Modal/_AssegnazioneStraightPerInversioneModal.cshtml";
         private const string REVERT_MODAL = "/Views/Shared/Modal/_RevertModal.cshtml";
-        private const string VALORIZZAZIONE_REVERT = "/Views/Shared/Modal/_ValorizzazioneRevert.cshtml";
 
         public OrdineProduzioneCKsController(GmaxDbContext context, IOrdineProduzioneCKService ordineProduzioneCKService, IMagazzinoService magazzinoService, IArticoloCKService articoloCKService, IOrdineProdCompCKService ordineProdCompCKService, IAssegnazioneService assegnazioneService, IAssegnazioneValidator validator, IGiacenzaService giacenzaSevice)
         {

@@ -144,13 +144,13 @@
     //     });
     // });
 
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     document.addEventListener('hidden.bs.modal', function (event) {
-    //         // ricarica completa della pagina
-    //         location.reload();
-    //         // oppure: window.location.href = window.location.href;
-    //     });
-    // });
+    document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('hidden.bs.modal', function (event) {
+            // ricarica completa della pagina
+            location.reload();
+            // oppure: window.location.href = window.location.href;
+        });
+    });
 
     function updateTargetFromSelect(selectEl) {
       // const val = selectEl.value;

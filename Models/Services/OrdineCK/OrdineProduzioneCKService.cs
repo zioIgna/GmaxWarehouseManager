@@ -88,7 +88,6 @@ namespace Gmax.Models.Services.OrdineCK
             {
                 throw new Exception($"Non è stato possibile recuperare l'ordine di produzione con riferimenti nroLancio: {nroLancio}, nroSottolancio: {nroSottolancio}");
             }
-            ordineProduzioneCK = await ConditionallyInitializeOPAsync(nroLancio, nroSottolancio, ordineProduzioneCK);
             var ordineProduzioneCKDetailViewModel = ordineProduzioneCK.AsDetailViewModel();
             foreach (var opcDetView in ordineProduzioneCKDetailViewModel.OrdineProdCompCKList)
             {

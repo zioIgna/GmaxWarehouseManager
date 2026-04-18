@@ -176,8 +176,6 @@ namespace Gmax.Models.Services.OrdineCK
             giacenzaList = FilterOutMagazzinoDestinazione(viewModel.MagazzinoDestinazione, giacenzaList);
             await CheckForMissingMagazziniAsync(giacenzaList);
 
-            var assegnazioneList = await assegnazioneService.GetAssegnazioneListByCodartTipoartAsync(viewModel.TipoArticolo, viewModel.CodiceArticolo);
-
             IEnumerable<Entities.Magazzino>? magazzinoList;
             var disponibilitaDict = new Dictionary<string, int>();
             if (giacenzaList.Any())

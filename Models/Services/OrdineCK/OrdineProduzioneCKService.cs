@@ -202,6 +202,7 @@ namespace Gmax.Models.Services.OrdineCK
             viewModel.DisponibilitaMagazzini = disponibilitaMagazzini;
         }
 
+        [Obsolete]
         public async Task<int> CalculateDisponibilitaMagFromAssegnazioniAsync(int magId, string tipoArt, string codArt)
         {
             var assegnazioneList = await assegnazioneService.GetAssegnazioneListByMagdestidTipoartCodart(magId, tipoArt, codArt);
@@ -353,7 +354,8 @@ namespace Gmax.Models.Services.OrdineCK
 
             return updatedOrdineProdCompCK;
         }
-    
+
+        [Obsolete]
         public async Task<AssegnazioneModalViewModel> CreateAssegnazioneModalViewModelFromModelBaseAsync(IAssegnazioneViewModelBase viewModelBase)
         {
             AssegnazioneModalViewModel assegnazioneModalViewModel = new AssegnazioneModalViewModel();

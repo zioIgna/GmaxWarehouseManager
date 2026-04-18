@@ -6,20 +6,6 @@
 
 <h2>Dettagli Ordine Produzione</h2>
 
-@foreach(var opc in Model.OrdineProdCompCKList)
-{
-    var formId = string.Join("_", "form", opc.TipoArticolo, opc.CodiceArticolo, opc.NroLancio, opc.NroSottolancio);
-    <form
-        asp-action="EditInline" 
-        id="@formId" 
-        class="inlineReceiverForm" 
-        data-tipoarticolo="@opc.TipoArticolo" 
-        data-codicearticolo="@opc.CodiceArticolo"
-        data-nrolancio="@opc.NroLancio"
-        data-nrosottolancio="@opc.NroSottolancio"
-    ></form>
-}
-
 <div class="card bg-light mb-2">
     <div class="card-header fw-bold">Info</div>
     <div class="card-body">
@@ -113,10 +99,6 @@
 
 <div id="modal-container"></div>
 
-<script src="~/js/OrdineProdCompCK/InlineEdit.js"></script>
-
-@* @section Scripts{
-} *@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // 1. Recupera gli elementi
@@ -129,20 +111,6 @@
             }
         }
     })
-
-    // document.addEventListener('DOMContentLoaded', function () {
-    //     document.addEventListener('hidden.bs.modal', function (event) {
-    //         // rimuove eventuali backdrop rimasti
-    //         document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-    //         // ripristina body
-    //         document.body.classList.remove('modal-open');
-    //         document.body.style.paddingRight = '';
-    //         // dispose dell'istanza chiusa (se vuoi)
-    //         const modalEl = event.target;
-    //         const instance = bootstrap.Modal.getInstance(modalEl);
-    //         if (instance) instance.dispose();
-    //     });
-    // });
 
     document.addEventListener('DOMContentLoaded', function () {
         document.addEventListener('hidden.bs.modal', function (event) {
